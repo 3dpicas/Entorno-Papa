@@ -6,10 +6,11 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** Bloque 0 en curso — Tareas 2 y 3 hechas y verificadas; Tarea 1 hecha salvo su Paso 5 (verificación visual de la ventana Tauri)
-- **Siguiente paso:** instalar Rust + MSVC Build Tools en el PC de desarrollo (no estaban), ejecutar `npm run tauri dev` y cerrar el Paso 5 de la Tarea 1. Después, Bloque 1 Tarea 4 (parser del manifest).
-- **Repos:** raíz @ `4bb0e01` · `entorno-app` @ `6b3168e` · `entorno-contenido` @ `d8d716d`
-- **Última sesión:** 2026-07-26 — scaffolding de los dos repos; Vitest en verde (5 tests); validador de contenido en verde y probado también en fallo. Bloque 0 **no cerrado**: falta compilar la app.
+- **Fase:** ✅ **Bloque 0 cerrado** (Tareas 1, 2 y 3 hechas y verificadas)
+- **Siguiente paso:** Bloque 1, Tarea 4 — parser del manifest (`src/lib/manifest.js` + `tests/manifest.test.js`), TDD.
+- **Repos:** raíz @ `fe1a3e9`+ · `entorno-app` @ `d4087de` (tag `bloque-0`) · `entorno-contenido` @ `d8d716d` (tag `bloque-0`)
+- **Última sesión:** 2026-07-26/27 — scaffolding de los dos repos; Vitest en verde (5 tests); validador de contenido en verde y probado también en fallo; se instaló el toolchain de Rust + MSVC y la app compiló y abrió ventana maximizada.
+- **Antes de escribir código:** `cd entorno-app && npm test` y `cd entorno-contenido && npm run check` deben estar en verde. Para cualquier comando de Tauri: `$env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"`.
 
 ---
 
@@ -29,17 +30,24 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## BLOQUE 0 — Scaffolding
 
-### Tarea 1: estructura raíz + app Tauri — PARCIAL, falta Paso 5 (2026-07-26)
+### Tarea 1: estructura raíz + app Tauri — HECHA (pasos 1–4 y 6 el 2026-07-26; paso 5 el 2026-07-27)
 
-- **Commits:** `4bb0e01` (raíz: `.gitignore` que ignora los dos repos anidados) · `8f4aa88` (entorno-app: commit raíz del scaffolding)
-- **Verificado:** `npm run build` → `built in 33ms`, genera `dist/index.html` + `dist/assets/index-*.js`. `npx tauri --version` → `tauri-cli 2.11.4`. **Paso 5 NO verificado**: `npm run tauri dev` no se ha ejecutado.
+- **Commits:** `4bb0e01` (raíz: `.gitignore` que ignora los dos repos anidados) · `8f4aa88` (entorno-app: commit raíz del scaffolding) · `d4087de` (entorno-app: `Cargo.lock` del primer build, más la normalización a `features = []` que cargo hace solo en `Cargo.toml`)
+- **Verificado:**
+  - `npm run build` → `built in 33ms`, genera `dist/index.html` + `dist/assets/index-*.js`.
+  - `npm run tauri dev` → compiló 425 crates desde cero y abrió la ventana. Comprobado por API de Win32, no de oídas: `GetWindowPlacement` devolvió `showCmd = 3` (SW_SHOWMAXIMIZED), título exacto `Entorno de Papá`, rectángulo 1550×926 en una pantalla de 1536×960 (el desbordamiento de 7 px por lado es el normal de una ventana maximizada en Windows).
+  - Captura de pantalla de la ventana revisada: se ve el texto placeholder «Entorno de Papá» y los acentos salen correctos, lo que confirma de paso que la cadena UTF-8 sobrevive de `main.js` al WebView2.
+  - Toolchain con el que se compiló: `cargo 1.97.1`, `rustc 1.97.1`, `stable-x86_64-pc-windows-msvc`, Visual Studio Build Tools 2026.
 - **Desviaciones del plan:**
   - `create-vite@9.1.1` genera un demo distinto al que suponía el plan. En vez de `src/counter.js` + `src/javascript.svg` + `public/vite.svg`, genera `src/counter.js`, `src/style.css`, `src/assets/` (hero.png, javascript.svg, vite.svg) y `public/` (favicon.svg, icons.svg). Se borró todo eso; `public/` quedó vacío y se eliminó también. Se quitó el `<link rel="icon">` de `index.html` porque apuntaba al favicon borrado.
   - `npx tauri init` necesitó `--ci` para no quedarse esperando entrada interactiva (la shell de la sesión no tiene stdin).
   - `tauri init` **no** añade el script `tauri` a `package.json`. Se añadió a mano (`"tauri": "tauri"`), imprescindible porque el plan usa `npm run tauri dev`.
   - En `tauri.conf.json` se descartaron las claves generadas `width: 800` / `height: 600` porque contradicen el `minWidth: 1024` que pide el plan. Se conservaron `resizable: true` y `fullscreen: false`.
 - **Decisiones nuevas:** ninguna de diseño. Versiones fijadas por el entorno: Node v24.15.0, npm 11.14.1, Vite 8.1.5, tauri-cli 2.11.4, @tauri-apps/api 2.11.1.
-- **Pendientes que deja:** **Paso 5 sin verificar** — el PC de desarrollo no tiene Rust ni MSVC Build Tools (sí tiene WebView2 Runtime). Sin ellos Tauri no compila. Hay que instalar `Microsoft.VisualStudio.2022.BuildTools` con la carga `Microsoft.VisualStudio.Workload.VCTools` y luego `Rustlang.Rustup`, en ese orden, y ejecutar `npm run tauri dev` para ver la ventana maximizada «Entorno de Papá».
+- **Pendientes que deja:**
+  - `src-tauri/Cargo.toml` se quedó con los valores por defecto de la plantilla: `name = "app"`, `[lib] name = "app_lib"`, `description = "A Tauri App"`, `authors = ["you"]`. El flag `--app-name entorno-papa` de `tauri init` **no** los tocó. No rompe nada (el nombre del ejecutable y del instalador los manda `productName` de `tauri.conf.json`), pero conviene arreglar nombre/descripción/autor al llegar al Bloque 4 (distribución), donde esos metadatos acaban en las propiedades del .exe.
+  - La plantilla trae ya `tauri-plugin-log` como dependencia en `Cargo.toml`, pero **no** está registrado en `lib.rs`. El plan lo necesita más adelante.
+- **Nota de entorno (importante para retomar):** el PC de desarrollo no tenía Rust ni MSVC Build Tools; se instalaron el 2026-07-27 (`Microsoft.VisualStudio.2022.BuildTools` con la carga `Microsoft.VisualStudio.Workload.VCTools`, y `Rustlang.Rustup`). WebView2 Runtime ya venía de serie. `cargo` **no** está en el PATH de las shells nuevas de la sesión: hay que prefijar `$env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"` o abrir una terminal nueva.
 
 ### Tarea 2: Vitest operativo — HECHA (2026-07-26)
 
@@ -56,6 +64,21 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 - **Desviaciones del plan:** `npm init -y` genera `type: commonjs`, un script `test` que falla a propósito y campos vacíos (`main`, `keywords`, `author`). Se reescribió `package.json` entero en vez de solo añadir claves: `type: module`, `private: true`, script `check`, descripción real. Después se regeneró `package-lock.json` con `npm install --package-lock-only` para que el `npm ci` del workflow no choque con el `package.json` editado.
 - **Decisiones nuevas:** Ninguna. El schema, el manifest, la guía de ejemplo y `check.mjs` son literalmente los del plan (contrato para las Tareas 4–9).
 - **Pendientes que deja:** El workflow `check.yml` no se ha ejecutado nunca de verdad: el repo aún no está en GitHub, así que el CI está sin estrenar. `iconos/` e `img/` están vacíos con `.gitkeep`.
+
+## ✅ BLOQUE 0 cerrado (2026-07-27)
+
+- **Resultado verificable de la spec:** §10 → «App vacía compila y abre ventana». Comprobado ejecutando `npm run tauri dev`: la compilación de 425 crates terminó sin errores y la ventana abrió maximizada (`GetWindowPlacement` → `showCmd = 3`) con el título `Entorno de Papá` y el texto placeholder visible en una captura de pantalla. No es «debería funcionar»: está visto funcionando.
+- **Estado de los repos:** raíz @ `fe1a3e9`+ (docs) · entorno-app @ `d4087de` / tag `bloque-0` · entorno-contenido @ `d8d716d` / tag `bloque-0`
+- **Qué sabe hacer la app ahora:** abre una ventana maximizada en blanco con un texto de prueba. Nada más: no lee el manifest, no pinta tarjetas, no navega. Lo que sí existe es el andamio completo — Tauri v2 compila, Vitest corre tests, y el repo de contenido tiene su schema y su validador funcionando.
+- **Deuda/pendientes acumulados:**
+  1. Metadatos por defecto en `src-tauri/Cargo.toml` (`name = "app"`, `authors = ["you"]`) — arreglar en Bloque 4.
+  2. `tauri-plugin-log` está como dependencia pero sin registrar en `lib.rs`.
+  3. Ningún repo está subido a GitHub, así que el workflow `check.yml` sigue sin estrenar y no hay Releases para el updater.
+  4. `recursos/`, `scripts/` y `src/styles/` de `entorno-app` no existen todavía (los crean bloques posteriores).
+- **Notas para el futuro:**
+  - `cargo` no está en el PATH por defecto en esta máquina: `$env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"` antes de cualquier comando de Tauri, o terminal nueva.
+  - El primer `npm run tauri dev` tarda varios minutos (descarga y compila 425 crates). Los siguientes son rápidos porque `src-tauri/target/` queda cacheado — no borrarlo a la ligera.
+  - `create-vite` y `tauri init` generan plantillas que cambian entre versiones: el plan describe la de su fecha, no la que te vas a encontrar. Comparar antes de borrar ficheros del demo.
 
 ---
 

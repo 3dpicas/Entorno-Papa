@@ -153,7 +153,7 @@ En `src-tauri/tauri.conf.json` ajustar:
 
 (El resto de claves generadas se conservan.)
 
-- [ ] **Step 5: Verificar que compila y abre**
+- [x] **Step 5: Verificar que compila y abre**
 
 Run: `npm run tauri dev`
 Expected: ventana maximizada "Entorno de Papá" con el texto placeholder. Cerrar.
