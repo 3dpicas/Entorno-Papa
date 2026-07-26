@@ -90,7 +90,7 @@ Entorno-para-Papa/               (repo raíz: solo docs)
 **Interfaces:**
 - Produces: proyecto `entorno-app` con `npm run tauri dev` funcional; ventana maximizada titulada "Entorno de Papá".
 
-- [ ] **Step 1: gitignore raíz y commit**
+- [x] **Step 1: gitignore raíz y commit**
 
 En `B:\01_Proyectos\Entorno-para-Papa` crear `.gitignore`:
 
@@ -103,7 +103,7 @@ entorno-contenido/
 git add .gitignore && git commit -m "chore: ignorar repos anidados"
 ```
 
-- [ ] **Step 2: Scaffold Vite vanilla**
+- [x] **Step 2: Scaffold Vite vanilla**
 
 ```bash
 cd /b/01_Proyectos/Entorno-para-Papa
@@ -120,7 +120,7 @@ document.querySelector('#app').textContent = 'Entorno de Papá';
 
 Y `index.html` con `<html lang="es">`, `<title>Entorno de Papá</title>`, `<div id="app"></div>` y el script module a `/src/main.js` (sin más).
 
-- [ ] **Step 3: Añadir Tauri v2**
+- [x] **Step 3: Añadir Tauri v2**
 
 ```bash
 npm install -D @tauri-apps/cli@^2
@@ -130,7 +130,7 @@ npx tauri init --app-name entorno-papa --window-title "Entorno de Papá" \
   --before-dev-command "npm run dev" --before-build-command "npm run build"
 ```
 
-- [ ] **Step 4: Configurar tauri.conf.json**
+- [x] **Step 4: Configurar tauri.conf.json**
 
 En `src-tauri/tauri.conf.json` ajustar:
 
@@ -158,7 +158,7 @@ En `src-tauri/tauri.conf.json` ajustar:
 Run: `npm run tauri dev`
 Expected: ventana maximizada "Entorno de Papá" con el texto placeholder. Cerrar.
 
-- [ ] **Step 6: git init + commit**
+- [x] **Step 6: git init + commit**
 
 ```bash
 cd entorno-app
@@ -177,7 +177,7 @@ git add -A && git commit -m "feat: scaffolding Tauri v2 + Vite vanilla"
 **Interfaces:**
 - Produces: `saludo(hora: number): string` — "Buenos días, Papá" (6–13), "Buenas tardes, Papá" (14–20), "Buenas noches, Papá" (21–5). Comando `npm test` (vitest run).
 
-- [ ] **Step 1: Instalar y configurar Vitest**
+- [x] **Step 1: Instalar y configurar Vitest**
 
 ```bash
 npm install -D vitest jsdom
@@ -194,7 +194,7 @@ export default defineConfig({
 
 En `package.json` añadir script: `"test": "vitest run"`.
 
-- [ ] **Step 2: Test que falla**
+- [x] **Step 2: Test que falla**
 
 `tests/saludo.test.js`:
 
@@ -213,7 +213,7 @@ describe('saludo', () => {
 
 Run: `npm test` — Expected: FAIL (módulo no existe).
 
-- [ ] **Step 3: Implementar**
+- [x] **Step 3: Implementar**
 
 `src/lib/saludo.js`:
 
@@ -225,11 +225,11 @@ export function saludo(hora) {
 }
 ```
 
-- [ ] **Step 4: Verificar que pasa**
+- [x] **Step 4: Verificar que pasa**
 
 Run: `npm test` — Expected: 5 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A && git commit -m "test: Vitest operativo con módulo saludo"
@@ -249,7 +249,7 @@ git add -A && git commit -m "test: Vitest operativo con módulo saludo"
 **Interfaces:**
 - Produces: `manifest.json` conforme al schema (contrato para Tasks 4–8); convención de guías `## Paso ...` (contrato para Task 9); `npm run check` valida todo el contenido.
 
-- [ ] **Step 1: Estructura y package.json**
+- [x] **Step 1: Estructura y package.json**
 
 ```bash
 cd /b/01_Proyectos/Entorno-para-Papa
@@ -261,7 +261,7 @@ npm init -y && npm install -D ajv
 
 En `package.json` añadir: `"type": "module"` y script `"check": "node scripts/check.mjs"`.
 
-- [ ] **Step 2: Schema del manifest**
+- [x] **Step 2: Schema del manifest**
 
 `schema/manifest.schema.json`:
 
@@ -322,7 +322,7 @@ En `package.json` añadir: `"type": "module"` y script `"check": "node scripts/c
 }
 ```
 
-- [ ] **Step 3: manifest.json inicial**
+- [x] **Step 3: manifest.json inicial**
 
 ```json
 {
@@ -369,7 +369,7 @@ En `package.json` añadir: `"type": "module"` y script `"check": "node scripts/c
 }
 ```
 
-- [ ] **Step 4: Guía de ejemplo**
+- [x] **Step 4: Guía de ejemplo**
 
 `guias/ejemplo-correo.md`:
 
@@ -388,7 +388,7 @@ Escribe gmail.com en la barra de arriba y pulsa Enter.
 Es el botón grande de la izquierda con un lápiz.
 ```
 
-- [ ] **Step 5: Validador check.mjs**
+- [x] **Step 5: Validador check.mjs**
 
 `scripts/check.mjs`:
 
@@ -431,12 +431,12 @@ if (errores.length) { console.error(errores.join('\n')); process.exit(1); }
 console.log('Contenido OK');
 ```
 
-- [ ] **Step 6: Probar el validador — pasa y falla**
+- [x] **Step 6: Probar el validador — pasa y falla**
 
 Run: `npm run check` — Expected: `Contenido OK`.
 Romper a propósito: cambiar `"guia": "guias/no-existe.md"` → `npm run check` — Expected: exit 1 con `guía no existe`. Deshacer el cambio.
 
-- [ ] **Step 7: GitHub Action**
+- [x] **Step 7: GitHub Action**
 
 `.github/workflows/check.yml`:
 
@@ -454,7 +454,7 @@ jobs:
       - run: npm run check
 ```
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 echo "node_modules/" > .gitignore
