@@ -8,9 +8,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 - **Fase:** ✅ **Bloque 0 cerrado** (Tareas 1, 2 y 3 hechas y verificadas)
 - **Siguiente paso:** Bloque 1, Tarea 4 — parser del manifest (`src/lib/manifest.js` + `tests/manifest.test.js`), TDD.
-- **Repos:** raíz @ `fe1a3e9`+ · `entorno-app` @ `d4087de` (tag `bloque-0`) · `entorno-contenido` @ `d8d716d` (tag `bloque-0`)
+- **Repos:** raíz @ `335373c` (tag `bloque-0`) · `entorno-app` @ `d4087de` (tag `bloque-0`) · `entorno-contenido` @ `d8d716d` (tag `bloque-0`)
 - **Última sesión:** 2026-07-26/27 — scaffolding de los dos repos; Vitest en verde (5 tests); validador de contenido en verde y probado también en fallo; se instaló el toolchain de Rust + MSVC y la app compiló y abrió ventana maximizada.
-- **Antes de escribir código:** `cd entorno-app && npm test` y `cd entorno-contenido && npm run check` deben estar en verde. Para cualquier comando de Tauri: `$env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"`.
+- **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
+- **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
 ---
 
@@ -68,7 +69,7 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 ## ✅ BLOQUE 0 cerrado (2026-07-27)
 
 - **Resultado verificable de la spec:** §10 → «App vacía compila y abre ventana». Comprobado ejecutando `npm run tauri dev`: la compilación de 425 crates terminó sin errores y la ventana abrió maximizada (`GetWindowPlacement` → `showCmd = 3`) con el título `Entorno de Papá` y el texto placeholder visible en una captura de pantalla. No es «debería funcionar»: está visto funcionando.
-- **Estado de los repos:** raíz @ `fe1a3e9`+ (docs) · entorno-app @ `d4087de` / tag `bloque-0` · entorno-contenido @ `d8d716d` / tag `bloque-0`
+- **Estado de los repos:** raíz @ `335373c` / tag `bloque-0` · entorno-app @ `d4087de` / tag `bloque-0` · entorno-contenido @ `d8d716d` / tag `bloque-0`
 - **Qué sabe hacer la app ahora:** abre una ventana maximizada en blanco con un texto de prueba. Nada más: no lee el manifest, no pinta tarjetas, no navega. Lo que sí existe es el andamio completo — Tauri v2 compila, Vitest corre tests, y el repo de contenido tiene su schema y su validador funcionando.
 - **Deuda/pendientes acumulados:**
   1. Metadatos por defecto en `src-tauri/Cargo.toml` (`name = "app"`, `authors = ["you"]`) — arreglar en Bloque 4.

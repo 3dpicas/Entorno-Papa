@@ -17,7 +17,12 @@ Regla de oro: **el Plan dice lo que se pensaba hacer; el Registro dice lo que de
 
 1. Leer la sección **«Estado actual»** de `docs/REGISTRO.md` (30 segundos: dónde quedó todo).
 2. Abrir el Plan por la tarea indicada como siguiente.
-3. Verificar que el entorno arranca: `npm test` (en `entorno-app/`) y `npm run check` (en `entorno-contenido/`) en verde antes de escribir nada nuevo.
+3. Verificar que el entorno arranca, en verde, antes de escribir nada nuevo:
+   - `npm test` en `entorno-app/`
+   - `npm run check` en `entorno-contenido/`
+   - si la tarea toca Rust o Tauri, primero `$env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"` (`cargo` no está en el PATH por defecto) y luego `cargo test` en `entorno-app/src-tauri/`
+
+   Si algo está rojo antes de empezar, eso es la tarea: arreglarlo y anotarlo. Ver requisitos del entorno en `CLAUDE.md`.
 
 ## Al EMPEZAR una tarea
 
@@ -27,6 +32,7 @@ Regla de oro: **el Plan dice lo que se pensaba hacer; el Registro dice lo que de
 ## Al TERMINAR una tarea
 
 1. **Verificar**: todos los tests en verde (`npm test` / `cargo test` según toque). Sin verde no hay tarea terminada.
+   - Si la verificación es **visual** («se abre la ventana», «el texto se lee a distancia», «se abre el navegador»), no vale la palabra de nadie: dejar constancia objetiva. Sirve una captura de pantalla, o consultar el estado real (por ejemplo el título y `showCmd` de la ventana por API de Win32, como se hizo en la Tarea 1). Lo comprobado se escribe en el Registro con el dato concreto, no con un «funciona».
 2. **Commit** hecho según el paso final de la tarea (uno por tarea como mínimo).
 3. **Marcar checkboxes** `- [x]` de todos los pasos de la tarea en el Plan.
 4. **Añadir entrada al Registro** con la plantilla de tarea (ver abajo). Obligatorio rellenar «Desviaciones» aunque sea "Ninguna" — es el campo que salva el proyecto meses después.
