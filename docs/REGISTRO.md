@@ -8,7 +8,7 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 - **Fase:** ✅ **Bloque 0 cerrado** (Tareas 1, 2 y 3 hechas y verificadas)
 - **Siguiente paso:** Bloque 1, Tarea 4 — parser del manifest (`src/lib/manifest.js` + `tests/manifest.test.js`), TDD.
-- **Repos:** raíz @ `335373c` (tag `bloque-0`) · `entorno-app` @ `d4087de` (tag `bloque-0`) · `entorno-contenido` @ `d8d716d` (tag `bloque-0`)
+- **Repos:** los tres en el tag `bloque-0` — raíz `335373c` (su HEAD sigue avanzando con los commits de documentación) · `entorno-app` `d4087de` · `entorno-contenido` `d8d716d`
 - **Última sesión:** 2026-07-26/27 — scaffolding de los dos repos; Vitest en verde (5 tests); validador de contenido en verde y probado también en fallo; se instaló el toolchain de Rust + MSVC y la app compiló y abrió ventana maximizada.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.

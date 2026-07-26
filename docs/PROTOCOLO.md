@@ -81,6 +81,7 @@ Regla de oro: **el Plan dice lo que se pensaba hacer; el Registro dice lo que de
 ## Convenciones fijas
 
 - Commits: prefijos `feat:`, `fix:`, `test:`, `chore:`, `docs:` — en español, imperativo.
+- Los acentos en los mensajes de commit se conservan bien pasando el mensaje por heredoc desde Bash (`git commit -F -`) — comprobado leyendo los bytes con `od -c`. Dos commits del Bloque 0 (`6b3168e`, `335373c`) salieron sin acentos por precaución antes de comprobarlo; el historial no se reescribió por algo puramente cosmético.
 - Identidad git en todo repo del proyecto: `marquib3l` / `marquib3l@gmail.com`.
 - Fechas siempre `AAAA-MM-DD`.
 - Idioma de todo (código aparte): español.
