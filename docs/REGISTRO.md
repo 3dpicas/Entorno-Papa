@@ -6,10 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** ✅ **Bloque 1 cerrado** (Tareas 4–8 hechas y verificadas)
-- **Siguiente paso:** Bloque 2, Tarea 9 — parser de guías Markdown (`src/lib/guia.js` + `tests/guia.test.js`), TDD. Empieza instalando `marked`.
-- **Repos:** `entorno-app` @ `5993372` / tag `bloque-1` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
-- **Última sesión:** 2026-07-27 — Bloque 1 entero: parser del manifest, router, pantallas Inicio y Sección, dispatcher con el plugin `opener` y la integración con el contenido real. 24 tests en verde y la app navegando de verdad.
+- **Fase:** 🔨 **Bloque 2 en curso** — Tarea 9 hecha; toca la Tarea 10.
+- **Siguiente paso:** Bloque 2, Tarea 10 — visor asistente paso a paso (`src/ui/guia.js` + `tests/ui-guia.test.js` + estilos del visor en `base.css`), TDD.
+- **Repos:** `entorno-app` @ `a246b99` (por delante del tag `bloque-1`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Última sesión:** 2026-07-27 — Bloque 1 entero (parser del manifest, router, pantallas Inicio y Sección, dispatcher con el plugin `opener`, integración con el contenido real) y arranque del Bloque 2 con el parser de guías. 29 tests en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -175,7 +175,16 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## BLOQUE 2 — Visor de guías
 
-*(sin tareas ejecutadas aún)*
+### Tarea 9: parser de guías Markdown — HECHA (2026-07-27)
+
+- **Commits:** `a246b99` (entorno-app)
+- **Verificado:** ciclo TDD completo. `npm test` sin implementación → `Failed to resolve import "../src/lib/guia.js"`, `Test Files 1 failed | 6 passed (7)`. Tras crear `src/lib/guia.js` → `Test Files 7 passed (7)`, `Tests 29 passed (29)`. `marked` 16.x instalado como dependencia de producción.
+- **Desviaciones del plan:** Ninguna.
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:**
+  1. El HTML de cada paso sale de `marked` **sin sanear** y la Tarea 10 lo mete con `innerHTML`. No es un agujero hoy porque el contenido es propio y pasa por el CI del repo de contenido, pero conviene recordarlo si alguna vez se aceptan guías de terceros.
+  2. El frontmatter se parsea a mano (`clave: valor` por línea), no con YAML de verdad: no admite listas, anidamiento ni comillas. Suficiente para `titulo` e `icono`.
+  3. El troceo exige literalmente `## Paso ...`; un `### Paso` o un `## Etapa` se ignoran en silencio. Es el contrato acordado en la Tarea 3 y el validador del repo de contenido lo comprueba.
 
 ---
 

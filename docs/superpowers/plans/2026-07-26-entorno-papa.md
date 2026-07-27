@@ -1230,13 +1230,13 @@ git add -A && git commit -m "feat: estilos accesibles e integración con conteni
 - Consumes: convención `## Paso ...` + frontmatter (Task 3).
 - Produces: `parsearGuia(md: string): { titulo?, icono?, pasos: [{ titulo, html }] }` — lanza `Error` si no hay pasos. Los `src` de imágenes quedan tal cual (relativos); la UI los resuelve.
 
-- [ ] **Step 1: Instalar marked**
+- [x] **Step 1: Instalar marked**
 
 ```bash
 npm install marked
 ```
 
-- [ ] **Step 2: Tests que fallan**
+- [x] **Step 2: Tests que fallan**
 
 `tests/guia.test.js`:
 
@@ -1295,7 +1295,7 @@ describe('parsearGuia', () => {
 
 Run: `npm test` — Expected: FAIL.
 
-- [ ] **Step 3: Implementación**
+- [x] **Step 3: Implementación**
 
 `src/lib/guia.js`:
 
@@ -1327,11 +1327,11 @@ function separarFrontmatter(md) {
 }
 ```
 
-- [ ] **Step 4: Verificar**
+- [x] **Step 4: Verificar**
 
 Run: `npm test` — Expected: todos pasan.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A && git commit -m "feat: parser de guías markdown a pasos"
