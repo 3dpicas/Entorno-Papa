@@ -585,7 +585,7 @@ git add -A && git commit -m "feat: parser del manifest con tolerancia a tipos fu
 - Consumes: `saludo()` (Task 2), manifest parseado (Task 4).
 - Produces: `registrarRuta(patron: RegExp, handler)`, `iniciarRouter(raiz: HTMLElement)`, `navegarA(hash: string)`; `renderInicio(manifest, { navegarA }): HTMLElement`. Rutas: `#/` inicio, `#/seccion/<id>`, `#/guia/<rutaCodificada>`.
 
-- [ ] **Step 1: Tests que fallan**
+- [x] **Step 1: Tests que fallan**
 
 `tests/router.test.js`:
 
@@ -662,7 +662,7 @@ describe('renderInicio', () => {
 
 Run: `npm test` — Expected: FAIL.
 
-- [ ] **Step 2: Implementar router**
+- [x] **Step 2: Implementar router**
 
 `src/lib/router.js`:
 
@@ -689,7 +689,7 @@ export function iniciarRouter(raiz) {
 }
 ```
 
-- [ ] **Step 3: Implementar pantalla Inicio**
+- [x] **Step 3: Implementar pantalla Inicio**
 
 `src/ui/inicio.js`:
 
@@ -729,11 +729,11 @@ export function renderInicio(manifest, { navegarA }) {
 }
 ```
 
-- [ ] **Step 4: Verificar**
+- [x] **Step 4: Verificar**
 
 Run: `npm test` — Expected: todos pasan.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A && git commit -m "feat: router hash y pantalla de inicio"

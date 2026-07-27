@@ -6,10 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 1 en curso** — Tarea 4 hecha; toca la Tarea 5.
-- **Siguiente paso:** Bloque 1, Tarea 5 — router hash + pantalla Inicio (`src/lib/router.js`, `src/ui/inicio.js` + sus tests), TDD.
-- **Repos:** `entorno-app` @ `1da03ba` (por delante del tag `bloque-0`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
-- **Última sesión:** 2026-07-27 — arrancado el Bloque 1 con la Tarea 4 (parser del manifest, TDD, 11 tests en verde).
+- **Fase:** 🔨 **Bloque 1 en curso** — Tareas 4 y 5 hechas; toca la Tarea 6.
+- **Siguiente paso:** Bloque 1, Tarea 6 — pantalla Sección (`src/ui/seccion.js` + `tests/seccion.test.js`), TDD.
+- **Repos:** `entorno-app` @ `e7d83b3` (por delante del tag `bloque-0`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Última sesión:** 2026-07-27 — arrancado el Bloque 1: Tarea 4 (parser del manifest) y Tarea 5 (router + Inicio), TDD, 17 tests en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -92,6 +92,17 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 - **Desviaciones del plan:** Ninguna. El test y la implementación son literalmente los del plan.
 - **Decisiones nuevas:** Ninguna.
 - **Pendientes que deja:** El parser no valida `url`/`guia` de cada tarjeta (eso lo cubre el schema Ajv del repo de contenido, no la app). La app confía en que el contenido pasó el CI; si llegara un manifest con una tarjeta `enlace` sin `url`, `parsearManifest` la dejaría pasar y el fallo saldría al pulsar. Aceptable en v1 porque el contenido es propio y validado en origen.
+
+### Tarea 5: router hash + pantalla Inicio — HECHA (2026-07-27)
+
+- **Commits:** `e7d83b3` (entorno-app)
+- **Verificado:** ciclo TDD completo. `npm test` con los dos tests escritos y sin implementación → `Failed to resolve import "../src/ui/inicio.js"` y `Failed to resolve import "../src/lib/router.js"`, `Test Files 2 failed | 2 passed (4)`. Tras crear `src/lib/router.js` y `src/ui/inicio.js` → `Test Files 4 passed (4)`, `Tests 17 passed (17)`.
+- **Desviaciones del plan:** Ninguna. Router e Inicio son literalmente los del plan.
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:**
+  1. `iniciarRouter` registra un listener de `hashchange` en cada llamada y nunca lo quita. En la app da igual (se llama una sola vez al arrancar), pero en los tests los listeners se acumulan entre casos; hoy no molesta porque `resolver` lee siempre el array `rutas` actual y las aserciones son síncronas. Si un test futuro se vuelve asíncrono, hará falta un `pararRouter()`.
+  2. `renderInicio` arranca un `setInterval` de 30 s para el reloj y no lo cancela. Solo se monta una vez, así que no hay fuga real; a vigilar si el Inicio pasa a re-renderizarse.
+  3. Todavía no hay CSS: las clases (`tarjeta-seccion`, `saludo`, `reloj`, `parrilla-secciones`) existen sin estilos hasta la Tarea 8.
 
 ---
 
