@@ -749,7 +749,7 @@ git add -A && git commit -m "feat: router hash y pantalla de inicio"
 - Consumes: manifest parseado (Task 4).
 - Produces: `renderSeccion(seccion, { alPulsarTarjeta, navegarA }): HTMLElement` — pinta tarjetas directas o grupos con encabezado; botón «🏠 Inicio» fijo que navega a `#/`.
 
-- [ ] **Step 1: Tests que fallan**
+- [x] **Step 1: Tests que fallan**
 
 `tests/seccion.test.js`:
 
@@ -798,7 +798,7 @@ describe('renderSeccion', () => {
 
 Run: `npm test` — Expected: FAIL.
 
-- [ ] **Step 2: Implementación**
+- [x] **Step 2: Implementación**
 
 `src/ui/seccion.js`:
 
@@ -848,11 +848,11 @@ export function renderSeccion(seccion, { alPulsarTarjeta, navegarA }) {
 }
 ```
 
-- [ ] **Step 3: Verificar**
+- [x] **Step 3: Verificar**
 
 Run: `npm test` — Expected: todos pasan.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A && git commit -m "feat: pantalla de sección con grupos y tarjetas"
