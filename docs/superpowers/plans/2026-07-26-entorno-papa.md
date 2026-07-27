@@ -869,7 +869,7 @@ git add -A && git commit -m "feat: pantalla de sección con grupos y tarjetas"
 - Consumes: tarjetas del manifest (Task 4).
 - Produces: `ejecutarTarjeta(tarjeta, { abrirUrl, navegarA })` — `enlace` → `abrirUrl(url)`; `guia` → `navegarA('#/guia/' + encodeURIComponent(ruta))`. En producción `abrirUrl` = `openUrl` de `@tauri-apps/plugin-opener`.
 
-- [ ] **Step 1: Tests que fallan**
+- [x] **Step 1: Tests que fallan**
 
 `tests/acciones.test.js`:
 
@@ -900,7 +900,7 @@ describe('ejecutarTarjeta', () => {
 
 Run: `npm test` — Expected: FAIL.
 
-- [ ] **Step 2: Implementación**
+- [x] **Step 2: Implementación**
 
 `src/lib/acciones.js`:
 
@@ -911,11 +911,11 @@ export function ejecutarTarjeta(tarjeta, { abrirUrl, navegarA }) {
 }
 ```
 
-- [ ] **Step 3: Verificar tests**
+- [x] **Step 3: Verificar tests**
 
 Run: `npm test` — Expected: todos pasan.
 
-- [ ] **Step 4: Añadir plugin opener**
+- [x] **Step 4: Añadir plugin opener**
 
 ```bash
 npm run tauri add opener
@@ -930,7 +930,7 @@ En `src-tauri/capabilities/default.json`, sustituir el permiso `opener:default` 
 }
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A && git commit -m "feat: dispatcher de acciones y plugin opener"

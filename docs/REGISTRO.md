@@ -6,10 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 1 en curso** — Tareas 4, 5 y 6 hechas; toca la Tarea 7.
-- **Siguiente paso:** Bloque 1, Tarea 7 — dispatcher de acciones + plugin `opener` (`src/lib/acciones.js` + `tests/acciones.test.js` + `capabilities/default.json`), TDD.
-- **Repos:** `entorno-app` @ `cf19a7a` (por delante del tag `bloque-0`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
-- **Última sesión:** 2026-07-27 — arrancado el Bloque 1: Tareas 4 (parser del manifest), 5 (router + Inicio) y 6 (pantalla Sección), TDD, 21 tests en verde.
+- **Fase:** 🔨 **Bloque 1 en curso** — Tareas 4, 5, 6 y 7 hechas; toca la Tarea 8 (la última del bloque).
+- **Siguiente paso:** Bloque 1, Tarea 8 — estilos accesibles + integración con contenido real en dev (`config.rs`, `contenido.rs`, `contenido.js`, `main.js`, `tokens.css`, `base.css`). Incluye checklist manual con `npm run tauri dev`.
+- **Repos:** `entorno-app` @ `fb90941` (por delante del tag `bloque-0`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Última sesión:** 2026-07-27 — arrancado el Bloque 1: Tareas 4 (parser del manifest), 5 (router + Inicio), 6 (pantalla Sección) y 7 (dispatcher + plugin opener), TDD, 24 tests en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -111,6 +111,18 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 - **Desviaciones del plan:** Ninguna.
 - **Decisiones nuevas:** Ninguna.
 - **Pendientes que deja:** El emoji 🏠 del botón Inicio va incrustado en el JS, no en el CSS ni en el contenido. Si algún día hay que cambiar el icono habrá que tocar `seccion.js` y `guia.js` (Tarea 10 usa el mismo botón).
+
+### Tarea 7: dispatcher de acciones + plugin opener — HECHA (2026-07-27)
+
+- **Commits:** `fb90941` (entorno-app)
+- **Verificado:** ciclo TDD completo. `npm test` sin implementación → `Failed to resolve import "../src/lib/acciones.js"`, `Test Files 1 failed | 5 passed (6)`. Tras crear `src/lib/acciones.js` → `Test Files 6 passed (6)`, `Tests 24 passed (24)`. `npm run tauri add opener` terminó añadiendo `tauri-plugin-opener 2.5.4` a `Cargo.toml`, `@tauri-apps/plugin-opener@^2.5.4` a `package.json`, `.plugin(tauri_plugin_opener::init())` a `lib.rs` y el permiso a `capabilities/default.json` (luego sustituido por el de alcance).
+- **Desviaciones del plan:**
+  - `npm run tauri add opener` dejó un fichero basura `src-tauri/2` (139 bytes con la salida de `npm install`): el CLI lanza el `npm install` en una shell donde el `2>&1` acabó creando un fichero llamado `2`. Borrado antes de commitear.
+  - El mismo comando ejecuta `cargo fmt` al final, y eso **reformateó `build.rs`, `main.rs` y `lib.rs`** de 2 espacios (estilo de la plantilla de Tauri) a los 4 de rustfmt. Se conserva el reformateo, que es el estándar de Rust; por eso el commit toca ficheros que la tarea no menciona.
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:**
+  1. **Sin verificar en ejecución:** el alcance `{"url": "https://*"}` es un glob, y está por confirmar si casa con URLs que llevan ruta (`https://www.solitr.com/es`, `https://tetris.com/play-tetris`) o solo con el dominio pelado. Se comprueba en el checklist manual de la Tarea 8; si falla, hay que ampliar el patrón (p. ej. `https://**`) y anotarlo.
+  2. Corrección a la deuda anotada al cerrar el Bloque 0: `tauri-plugin-log` **sí** está registrado en `lib.rs`, dentro de `.setup()` y bajo `cfg!(debug_assertions)`; es decir, funciona en dev pero no en la build de producción. Que funcione en producción es lo que hará falta más adelante (§ del plan sobre logs), no el registro en sí.
 
 ---
 
