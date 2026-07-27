@@ -1348,7 +1348,7 @@ git add -A && git commit -m "feat: parser de guías markdown a pasos"
 - Consumes: `parsearGuia` (Task 9).
 - Produces: `renderGuia(guia, { navegarA, resolverImagen }): HTMLElement` — `resolverImagen(rel: string): Promise<string>` convierte src relativo en URL cargable (en producción `urlRecurso` de Task 8; en tests un stub).
 
-- [ ] **Step 1: Tests que fallan**
+- [x] **Step 1: Tests que fallan**
 
 `tests/ui-guia.test.js`:
 
@@ -1415,7 +1415,7 @@ describe('renderGuia', () => {
 
 Run: `npm test` — Expected: FAIL.
 
-- [ ] **Step 2: Implementación**
+- [x] **Step 2: Implementación**
 
 `src/ui/guia.js`:
 
@@ -1493,11 +1493,11 @@ Estilos a añadir en `base.css`:
 .indicador-paso { font-size: 28px; color: #555; }
 ```
 
-- [ ] **Step 3: Verificar**
+- [x] **Step 3: Verificar**
 
 Run: `npm test` — Expected: todos pasan.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A && git commit -m "feat: visor de guías paso a paso"

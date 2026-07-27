@@ -6,9 +6,9 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 2 en curso** — Tarea 9 hecha; toca la Tarea 10.
-- **Siguiente paso:** Bloque 2, Tarea 10 — visor asistente paso a paso (`src/ui/guia.js` + `tests/ui-guia.test.js` + estilos del visor en `base.css`), TDD.
-- **Repos:** `entorno-app` @ `a246b99` (por delante del tag `bloque-1`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Fase:** 🔨 **Bloque 2 en curso** — Tareas 9 y 10 hechas; toca la Tarea 11 (la última del bloque).
+- **Siguiente paso:** Bloque 2, Tarea 11 — registrar la ruta `#/guia/...` en `main.js` y verificar el visor en la app real.
+- **Repos:** `entorno-app` @ `761d620` (por delante del tag `bloque-1`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
 - **Última sesión:** 2026-07-27 — Bloque 1 entero (parser del manifest, router, pantallas Inicio y Sección, dispatcher con el plugin `opener`, integración con el contenido real) y arranque del Bloque 2 con el parser de guías. 29 tests en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
@@ -185,6 +185,17 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
   1. El HTML de cada paso sale de `marked` **sin sanear** y la Tarea 10 lo mete con `innerHTML`. No es un agujero hoy porque el contenido es propio y pasa por el CI del repo de contenido, pero conviene recordarlo si alguna vez se aceptan guías de terceros.
   2. El frontmatter se parsea a mano (`clave: valor` por línea), no con YAML de verdad: no admite listas, anidamiento ni comillas. Suficiente para `titulo` e `icono`.
   3. El troceo exige literalmente `## Paso ...`; un `### Paso` o un `## Etapa` se ignoran en silencio. Es el contrato acordado en la Tarea 3 y el validador del repo de contenido lo comprueba.
+
+### Tarea 10: visor asistente paso a paso — HECHA (2026-07-27)
+
+- **Commits:** `761d620` (entorno-app)
+- **Verificado:** ciclo TDD completo. `npm test` sin implementación → `Failed to resolve import "../src/ui/guia.js"`, `Test Files 1 failed | 7 passed (8)`. Tras crear `src/ui/guia.js` y añadir los estilos del visor a `base.css` → `Test Files 8 passed (8)`, `Tests 34 passed (34)`. Los cinco casos cubren: primer paso e indicador, Siguiente/Anterior, Anterior oculto en el paso 1, «✔ Terminar» en el último paso navegando a `#/`, botón Inicio, y resolución de `src` de imágenes.
+- **Desviaciones del plan:** Ninguna.
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:**
+  1. Sin verificar en la app real: eso es la Tarea 11, que registra la ruta `#/guia/...`. Hasta entonces el visor solo existe para los tests.
+  2. Las imágenes se resuelven de forma asíncrona tras pintar el paso, así que hay un instante con el `src` relativo (roto). El `addEventListener('error', ...)` borra la imagen si no carga — degradado silencioso, coherente con la spec §8, pero significa que un fallo de ruta se traduce en «la captura desaparece» sin más aviso que el log.
+  3. `.boton-siguiente` usa `var(--color-seccion, #2E7D32)`, pero el visor no fija `--color-seccion` (lo hace `renderSeccion` en su propio elemento). Al entrar en una guía el botón saldrá con el verde de reserva, no con el color de la sección de la que viene. Se verá en la Tarea 11.
 
 ---
 
