@@ -953,7 +953,7 @@ git add -A && git commit -m "feat: dispatcher de acciones y plugin opener"
   - JS `cargarManifest(): Promise<manifest>` y `urlRecurso(rel): Promise<string>` en `src/lib/contenido.js`.
   - En dev (`debug_assertions`) el dir de contenido es `config::DIR_CONTENIDO_DEV`; en prod es `<appdata>/contenido` (Task 14 lo puebla).
 
-- [ ] **Step 1: Rust config.rs y contenido.rs**
+- [x] **Step 1: Rust config.rs y contenido.rs**
 
 `src-tauri/src/config.rs`:
 
@@ -1031,7 +1031,7 @@ pub fn run() {
 }
 ```
 
-- [ ] **Step 2: Asset protocol para imágenes**
+- [x] **Step 2: Asset protocol para imágenes**
 
 En `src-tauri/tauri.conf.json`, dentro de `app.security`:
 
@@ -1045,7 +1045,7 @@ En `src-tauri/tauri.conf.json`, dentro de `app.security`:
 }
 ```
 
-- [ ] **Step 3: Puente JS**
+- [x] **Step 3: Puente JS**
 
 `src/lib/contenido.js`:
 
@@ -1068,7 +1068,7 @@ export async function urlRecurso(rel) {
 }
 ```
 
-- [ ] **Step 4: main.js integrando todo**
+- [x] **Step 4: main.js integrando todo**
 
 `src/main.js`:
 
@@ -1103,7 +1103,7 @@ async function arrancar() {
 arrancar();
 ```
 
-- [ ] **Step 5: Estilos**
+- [x] **Step 5: Estilos**
 
 `src/styles/tokens.css`:
 
@@ -1201,7 +1201,7 @@ button:hover, button:focus-visible {
 }
 ```
 
-- [ ] **Step 6: Verificación completa**
+- [x] **Step 6: Verificación completa**
 
 Run: `npm test` — Expected: todos los tests pasan.
 Run: `npm run tauri dev` — Expected (checklist manual):
@@ -1210,7 +1210,7 @@ Run: `npm run tauri dev` — Expected (checklist manual):
 - Clic en El País → se abre el navegador por defecto.
 - Texto legible a distancia; nada requiere doble clic.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add -A && git commit -m "feat: estilos accesibles e integración con contenido real en dev"

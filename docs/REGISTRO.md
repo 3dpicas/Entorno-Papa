@@ -6,10 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 1 en curso** — Tareas 4, 5, 6 y 7 hechas; toca la Tarea 8 (la última del bloque).
-- **Siguiente paso:** Bloque 1, Tarea 8 — estilos accesibles + integración con contenido real en dev (`config.rs`, `contenido.rs`, `contenido.js`, `main.js`, `tokens.css`, `base.css`). Incluye checklist manual con `npm run tauri dev`.
-- **Repos:** `entorno-app` @ `fb90941` (por delante del tag `bloque-0`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
-- **Última sesión:** 2026-07-27 — arrancado el Bloque 1: Tareas 4 (parser del manifest), 5 (router + Inicio), 6 (pantalla Sección) y 7 (dispatcher + plugin opener), TDD, 24 tests en verde.
+- **Fase:** ✅ **Bloque 1 cerrado** (Tareas 4–8 hechas y verificadas)
+- **Siguiente paso:** Bloque 2, Tarea 9 — parser de guías Markdown (`src/lib/guia.js` + `tests/guia.test.js`), TDD. Empieza instalando `marked`.
+- **Repos:** `entorno-app` @ `5993372` / tag `bloque-1` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Última sesión:** 2026-07-27 — Bloque 1 entero: parser del manifest, router, pantallas Inicio y Sección, dispatcher con el plugin `opener` y la integración con el contenido real. 24 tests en verde y la app navegando de verdad.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -123,6 +123,53 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 - **Pendientes que deja:**
   1. **Sin verificar en ejecución:** el alcance `{"url": "https://*"}` es un glob, y está por confirmar si casa con URLs que llevan ruta (`https://www.solitr.com/es`, `https://tetris.com/play-tetris`) o solo con el dominio pelado. Se comprueba en el checklist manual de la Tarea 8; si falla, hay que ampliar el patrón (p. ej. `https://**`) y anotarlo.
   2. Corrección a la deuda anotada al cerrar el Bloque 0: `tauri-plugin-log` **sí** está registrado en `lib.rs`, dentro de `.setup()` y bajo `cfg!(debug_assertions)`; es decir, funciona en dev pero no en la build de producción. Que funcione en producción es lo que hará falta más adelante (§ del plan sobre logs), no el registro en sí.
+
+### Tarea 8: estilos accesibles + integración con contenido real (dev) — HECHA (2026-07-27)
+
+- **Commits:** `5993372` (entorno-app)
+- **Verificado:**
+  - `npm test` → `Test Files 6 passed (6)`, `Tests 24 passed (24)`. `npm run build` → `built in 95ms`. `cargo check` sin warnings; `cargo test` → `test result: ok. 0 passed` (aún no hay código Rust propio con tests).
+  - App ejecutándose (`app.exe` del perfil dev, con vite aparte). Ventana `Entorno de Papá`, `showCmd = 3` (maximizada), **1938×1158** físicos.
+  - **Inicio:** captura con saludo «Buenas noches, Papá» (a las 22:57, coherente con `saludo()`), reloj `22:57` y las 3 tarjetas de sección con sus colores del manifest (#2E7D32 verde, #1565C0 azul, #E65100 naranja).
+  - **Sin scroll horizontal:** medido dentro de la página, `scrollWidth = clientWidth = 1536`; parrilla 1472 px y tarjeta 469 px, que es exactamente lo que predice el CSS (3×469 + 2×32 = 1471).
+  - **Navegación** (clics reales en el DOM vía CDP): pulsar «Prensa» → `hash=#/seccion/prensa`, `h1=Prensa`, grupos `Nacional,Deportes`, tarjetas `El País,El Mundo,Marca`. Pulsar «🏠 Inicio» → `hash=#/`, vuelve el saludo y las 3 secciones.
+  - **Enlaces al navegador:** pulsar la tarjeta «El País» abrió una pestaña nueva en el Edge del usuario; su título pasó de `...y 14 páginas más` a `EL PAÍS: el periódico global y 15 páginas más`. Además, invocando el comando del plugin directamente, `https://elpais.com` y `https://www.solitr.com/es` devolvieron ambos OK.
+  - **Contenido real:** todo lo anterior sale de `entorno-contenido/manifest.json` leído por el comando Rust `contenido_leer`, no de datos de prueba.
+- **Desviaciones del plan:**
+  - **`protocol-asset` era obligatorio y el plan no lo dice.** Con el `assetProtocol` del Step 2 pero sin la feature, `cargo check` falla: `The tauri dependency features on the Cargo.toml file does not match the allowlist defined under tauri.conf.json. Please run tauri dev or tauri build or add the protocol-asset feature`. Se puso `tauri = { version = "2.11.3", features = ["protocol-asset"] }`.
+  - `lib.rs` **no** se sustituyó por el del plan: se conservó el bloque `.setup()` con `tauri-plugin-log` que ya traía la plantilla y se le añadieron `mod config; mod contenido;` y el `invoke_handler`. El plan proponía un `lib.rs` que habría borrado el logger.
+  - En `contenido.rs`, `use tauri::Manager;` se movió dentro de la rama `#[cfg(not(debug_assertions))]`: en dev no se usa y dejaba un warning de import sin usar.
+  - `config.rs` lleva `#[allow(dead_code)]` en `GITHUB_OWNER` y `REPO_CONTENIDO` con un comentario que explica que los usa el sync del Bloque 3. Sin eso, `cargo check` suelta dos warnings en cada compilación.
+  - `index.html` figuraba como «Modify» en la tarea, pero ya tenía lo necesario del Bloque 0 (lang, título, `#app`, script module). No se tocó.
+- **Decisiones nuevas:** Ninguna de diseño.
+- **Cómo verificar la UI sin fiarse de la vista (aprendido a golpes, vale para las tareas 10 y 16):**
+  1. **DPI.** El monitor es 1920×1200 al 125%. PowerShell 5.1 es *DPI-unaware*, así que Win32 le devuelve coordenadas lógicas (ventana «1550×926») de una ventana que en realidad mide 1938×1158. Capturar con esas medidas recorta el 20 % derecho: eso me hizo dar por bueno un desbordamiento horizontal que **no existía**. Hay que llamar a `SetProcessDpiAwarenessContext(-4)` al principio de cada llamada de PowerShell (cada llamada es un proceso nuevo).
+  2. **Captura.** `CopyFromScreen` fotografía lo que haya encima (me sacó el navegador del usuario). Usar `PrintWindow(h, hdc, PW_RENDERFULLCONTENT=2)`, que le pide el contenido a la propia ventana.
+  3. **Clics.** Los clics sintéticos (`mouse_event`) **no** son fiables aquí: la ventana de Claude Code recupera el foco y los clics caen en el escritorio del usuario. Lo que sí funciona: lanzar la app con `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222` y hablar por CDP (`http://127.0.0.1:9222/json` + WebSocket, `Runtime.evaluate`). Así se pulsan botones por selector y se leen `location.hash`, textos y medidas. Script de apoyo en el scratchpad de la sesión (`uiauto.ps1`, `cdp.ps1`).
+  4. **Ciclo de vida.** `npm run tauri dev` muere en cuanto la shell cierra stdin. Para tener la app viva entre comandos: `npm run dev` (vite) por un lado y `target\debug\app.exe` por otro, cada uno como tarea de fondo.
+  5. **Caché.** El `app.exe` de dev sirve `dist/`, no vite; y WebView2 cachea `index.html` en `%LOCALAPPDATA%\com.marquibel.entorno`. Tras un `npm run build`, si la app no refleja el cambio, borrar esa carpeta.
+- **Pendientes que deja:**
+  1. Pulsar una tarjeta de guía lleva a `#/guia/<ruta>`, el router no tiene esa ruta y redirige a Inicio. Comprobado. Es lo esperado hasta la Tarea 10.
+  2. `contenido_ruta` devuelve la ruta canonicalizada de Windows, que en rutas de red o largas lleva el prefijo `\\?\`. Está por ver si `convertFileSrc` y el `scope` del `assetProtocol` lo tragan; se sabrá en la Tarea 10, la primera que carga imágenes.
+  3. Contenido: `https://www.solitr.com/es` responde **404** y `https://tetris.com/play-tetris` responde 308 (redirección, los navegadores la siguen). Son URLs de ejemplo del Bloque 0; hay que sustituir la de solitr al llegar al contenido real (Bloque 5).
+  4. La app arranca sin manejo de errores: si `cargarManifest()` fallara, la pantalla se quedaría en blanco. La spec §8 dice que el padre nunca ve errores; el degradado silencioso está previsto para el Bloque 3 junto con la caché.
+
+## ✅ BLOQUE 1 cerrado (2026-07-27)
+
+- **Resultado verificable de la spec:** §10 → «Panel navegable con prensa y juegos reales». Comprobado con la app en marcha y contenido real de `entorno-contenido`: Inicio pinta saludo, reloj y las 3 secciones del manifest; pulsar «Prensa» lleva a `#/seccion/prensa` con los grupos Nacional y Deportes y sus tarjetas; «🏠 Inicio» vuelve a `#/`; y pulsar «El País» abrió una pestaña nueva en el navegador del sistema (título `EL PAÍS: el periódico global`, contador de pestañas de Edge 14 → 15). Nada de esto es «debería funcionar»: son capturas y valores leídos de la página en ejecución.
+- **Estado de los repos:** entorno-app @ `5993372` / tag `bloque-1` · entorno-contenido @ `d8d716d` / tag `bloque-0` (el Bloque 1 no lo tocó)
+- **Qué sabe hacer la app ahora:** abre maximizada, lee el `manifest.json` del repo de contenido y pinta una pantalla de inicio con saludo según la hora, reloj y una tarjeta grande por sección. Al pulsar una sección muestra sus tarjetas (agrupadas si el manifest lo dice) y un botón de Inicio para volver. Las tarjetas de tipo enlace abren la web en el navegador de siempre. Las de guía todavía no llevan a ningún sitio: eso es el Bloque 2.
+- **Deuda/pendientes acumulados:**
+  1. Metadatos por defecto en `src-tauri/Cargo.toml` (`name = "app"`, `authors = ["you"]`) — arreglar en Bloque 4.
+  2. `tauri-plugin-log` solo está activo en dev (`cfg!(debug_assertions)`); para producción hay que registrarlo también.
+  3. Ningún repo está subido a GitHub: el workflow `check.yml` sigue sin estrenar y no hay Releases para el updater.
+  4. Sin manejo de errores en el arranque: si el manifest no cargara, pantalla en blanco (spec §8 lo prohíbe; toca en el Bloque 3).
+  5. `contenido_ruta` devuelve rutas canonicalizadas (`\\?\`) sin verificar contra `convertFileSrc` ni contra el `scope` del `assetProtocol` — primera prueba real en la Tarea 10.
+  6. `https://www.solitr.com/es` da 404 en el manifest de ejemplo.
+- **Notas para el futuro:**
+  - Verificar la interfaz por CDP (`--remote-debugging-port=9222`), no con clics sintéticos ni capturas de pantalla a ciegas. Está detallado en la entrada de la Tarea 8; ahorra la hora que costó averiguarlo.
+  - Todo comando de PowerShell que mida o capture ventanas tiene que declararse DPI-aware antes de nada, o las cifras mienten en un 25 % en esta máquina.
+  - `npm run tauri add <plugin>` ejecuta `cargo fmt` y reformatea ficheros que no son suyos, y deja un fichero basura llamado `2` en `src-tauri/`. Revisar `git status` antes de commitear.
 
 ---
 
