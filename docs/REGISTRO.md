@@ -6,10 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 2 en curso** — Tareas 9 y 10 hechas; toca la Tarea 11 (la última del bloque).
-- **Siguiente paso:** Bloque 2, Tarea 11 — registrar la ruta `#/guia/...` en `main.js` y verificar el visor en la app real.
-- **Repos:** `entorno-app` @ `761d620` (por delante del tag `bloque-1`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
-- **Última sesión:** 2026-07-27 — Bloque 1 entero (parser del manifest, router, pantallas Inicio y Sección, dispatcher con el plugin `opener`, integración con el contenido real) y arranque del Bloque 2 con el parser de guías. 29 tests en verde.
+- **Fase:** ✅ **Bloque 2 cerrado** (Tareas 9, 10 y 11 hechas y verificadas)
+- **Siguiente paso:** Bloque 3, Tarea 12 — validación de contenido, swap atómico y meta en Rust (`src-tauri/src/sync.rs`), TDD con `cargo test`. Empieza añadiendo `chrono` y `tempfile` (dev-dependency) a `Cargo.toml`.
+- **Repos:** `entorno-app` @ `be17c9d` / tag `bloque-2` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Última sesión:** 2026-07-27 — Bloques 1 y 2 completos: parser del manifest, router, pantallas Inicio y Sección, enlaces al navegador, integración con el contenido real, parser de guías y visor paso a paso. 34 tests JS en verde y todo comprobado con la app en marcha.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -147,7 +147,7 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
   2. **Captura.** `CopyFromScreen` fotografía lo que haya encima (me sacó el navegador del usuario). Usar `PrintWindow(h, hdc, PW_RENDERFULLCONTENT=2)`, que le pide el contenido a la propia ventana.
   3. **Clics.** Los clics sintéticos (`mouse_event`) **no** son fiables aquí: la ventana de Claude Code recupera el foco y los clics caen en el escritorio del usuario. Lo que sí funciona: lanzar la app con `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222` y hablar por CDP (`http://127.0.0.1:9222/json` + WebSocket, `Runtime.evaluate`). Así se pulsan botones por selector y se leen `location.hash`, textos y medidas. Script de apoyo en el scratchpad de la sesión (`uiauto.ps1`, `cdp.ps1`).
   4. **Ciclo de vida.** `npm run tauri dev` muere en cuanto la shell cierra stdin. Para tener la app viva entre comandos: `npm run dev` (vite) por un lado y `target\debug\app.exe` por otro, cada uno como tarea de fondo.
-  5. **Caché.** El `app.exe` de dev sirve `dist/`, no vite; y WebView2 cachea `index.html` en `%LOCALAPPDATA%\com.marquibel.entorno`. Tras un `npm run build`, si la app no refleja el cambio, borrar esa carpeta.
+  5. **Caché.** WebView2 cachea agresivamente en `%LOCALAPPDATA%\com.marquibel.entorno`; si un cambio del frontend no aparece, borrar esa carpeta y reabrir. (Corrección hecha en la Tarea 11: el `app.exe` de dev **sí** carga `http://localhost:5173`, o sea vite, no `dist/`. Sin vite levantado, la ventana muestra `ERR_CONNECTION_REFUSED`. Lo que me despistó en la Tarea 8 fue la caché, no la fuente.)
 - **Pendientes que deja:**
   1. Pulsar una tarjeta de guía lleva a `#/guia/<ruta>`, el router no tiene esa ruta y redirige a Inicio. Comprobado. Es lo esperado hasta la Tarea 10.
   2. `contenido_ruta` devuelve la ruta canonicalizada de Windows, que en rutas de red o largas lleva el prefijo `\\?\`. Está por ver si `convertFileSrc` y el `scope` del `assetProtocol` lo tragan; se sabrá en la Tarea 10, la primera que carga imágenes.
@@ -195,7 +195,40 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 - **Pendientes que deja:**
   1. Sin verificar en la app real: eso es la Tarea 11, que registra la ruta `#/guia/...`. Hasta entonces el visor solo existe para los tests.
   2. Las imágenes se resuelven de forma asíncrona tras pintar el paso, así que hay un instante con el `src` relativo (roto). El `addEventListener('error', ...)` borra la imagen si no carga — degradado silencioso, coherente con la spec §8, pero significa que un fallo de ruta se traduce en «la captura desaparece» sin más aviso que el log.
-  3. `.boton-siguiente` usa `var(--color-seccion, #2E7D32)`, pero el visor no fija `--color-seccion` (lo hace `renderSeccion` en su propio elemento). Al entrar en una guía el botón saldrá con el verde de reserva, no con el color de la sección de la que viene. Se verá en la Tarea 11.
+  3. `.boton-siguiente` usa `var(--color-seccion, #2E7D32)`, pero el visor no fija `--color-seccion` (lo hace `renderSeccion` en su propio elemento). Medido en la Tarea 11: el botón sale `rgb(69, 90, 100)`, es decir `#455A64` —el valor que `tokens.css` da a `--color-seccion` en `:root`—, no el verde de reserva, que nunca llega a usarse. El botón no hereda el color de la sección de la que viene la guía; queda así a propósito hasta que alguien decida lo contrario.
+
+### Tarea 11: integrar el visor en la app — HECHA (2026-07-27)
+
+- **Commits:** `be17c9d` (entorno-app)
+- **Verificado:** `npm test` → `Test Files 8 passed (8)`, `Tests 34 passed (34)` (sin regresiones). En la app en marcha, pilotada por CDP:
+  - Inicio → «Aprender» → tarjeta «Enviar un correo»: `hash=#/guia/guias%2Fejemplo-correo.md`, `h1=Enviar un correo`, `Paso 1: Abre el navegador`, indicador `Paso 1 de 3`, botón `Siguiente ➡`, Anterior oculto.
+  - Siguiente → `Paso 2 de 3` / `Paso 2: Entra en Gmail`, Anterior ya visible, botón Inicio presente. Anterior → vuelve a `Paso 1 de 3`.
+  - Dos veces Siguiente → `Paso 3 de 3`, `Paso 3: Pulsa "Redactar"`, el botón pasa a `✔ Terminar`. Pulsarlo → `hash=#/`, saludo y las 3 secciones otra vez.
+  - Captura del visor en el paso 3 revisada: cabecera con «🏠 Inicio» y el título de la guía, texto del paso, y el pie con Anterior / «Paso 3 de 3» / Terminar.
+  - **Guía inexistente:** `#/guia/guias%2Fno-existe.md` → el `catch` registra el fallo en consola y devuelve a `#/`; el visor no llega a montarse y el padre no ve ningún error. Es el comportamiento que pide la spec §8.
+  - El texto sale de `guias/ejemplo-correo.md` del repo de contenido leído por `contenido_leer`, no de datos de prueba.
+- **Desviaciones del plan:** Ninguna en el código. En la verificación sí: el plan dice `npm run tauri dev`, pero ese comando muere al cerrarse stdin en esta shell, así que se levantó vite y `app.exe` por separado y se comprobó por CDP (ver las notas de la Tarea 8).
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:**
+  1. **`resolverImagen` sigue sin probarse contra ficheros reales:** la guía de ejemplo no tiene imágenes, así que el camino `contenido_ruta` → `convertFileSrc` → `assetProtocol` no se ha ejercitado nunca. Sigue vivo el riesgo del prefijo `\\?\` de `canonicalize`. Hará falta una guía con captura (Bloque 5, o una prueba suelta antes).
+  2. El visor no recuerda por qué sección se entró: «Terminar» y «Inicio» llevan los dos a `#/`, nunca de vuelta a la sección. Es lo que dice el plan; anotado por si al usarlo se ve incómodo.
+
+## ✅ BLOQUE 2 cerrado (2026-07-27)
+
+- **Resultado verificable de la spec:** §10 → «Una guía de ejemplo completa funcionando». Comprobado con `guias/ejemplo-correo.md` del repo de contenido: se abre desde su tarjeta, recorre los 3 pasos hacia delante y hacia atrás, el botón final dice «✔ Terminar» y devuelve al inicio. Valores leídos de la página en ejecución, más una captura del visor.
+- **Estado de los repos:** entorno-app @ `be17c9d` / tag `bloque-2` · entorno-contenido @ `d8d716d` / tag `bloque-0` (el Bloque 2 tampoco lo tocó)
+- **Qué sabe hacer la app ahora:** todo lo del Bloque 1, y además abrir guías. Al pulsar una tarjeta de guía aparece un asistente a pantalla completa que enseña un paso cada vez, con botones grandes de Anterior y Siguiente, un «Paso N de M» y un botón de Inicio siempre a la vista. Si la guía no existe o está rota, vuelve al inicio sin decir nada.
+- **Deuda/pendientes acumulados:**
+  1. Metadatos por defecto en `src-tauri/Cargo.toml` (`name = "app"`, `authors = ["you"]`) — Bloque 4.
+  2. `tauri-plugin-log` solo activo en dev.
+  3. Ningún repo subido a GitHub: `check.yml` sin estrenar, sin Releases para el updater.
+  4. Sin manejo de errores en el arranque (`cargarManifest`): pantalla en blanco si fallara — Bloque 3.
+  5. **El camino de imágenes de las guías sigue sin ejercitarse** (`contenido_ruta` devuelve rutas con prefijo `\\?\`; `convertFileSrc` y el `scope` del `assetProtocol` están por validar).
+  6. `https://www.solitr.com/es` da 404 en el manifest de ejemplo.
+  7. El HTML de las guías va a `innerHTML` sin sanear (aceptable mientras el contenido sea propio y pase el CI).
+- **Notas para el futuro:**
+  - Para verificar en la app: levantar `npm run dev` y `target\debug\app.exe` por separado (con `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222`) y pilotar por CDP. `npm run tauri dev` no sobrevive a la shell.
+  - El binario de dev carga vite, no `dist/`: sin vite levantado la ventana muestra `ERR_CONNECTION_REFUSED`.
 
 ---
 

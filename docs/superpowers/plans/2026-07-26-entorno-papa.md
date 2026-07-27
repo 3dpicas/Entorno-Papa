@@ -1511,7 +1511,7 @@ git add -A && git commit -m "feat: visor de guías paso a paso"
 **Interfaces:**
 - Consumes: `renderGuia` (Task 10), `leerTexto`/`urlRecurso` (Task 8), `parsearGuia` (Task 9).
 
-- [ ] **Step 1: Registrar la ruta del visor**
+- [x] **Step 1: Registrar la ruta del visor**
 
 En `src/main.js`, añadir imports y ruta:
 
@@ -1540,7 +1540,7 @@ registrarRuta(/^#\/guia\/(.+)$/, (rutaCodificada) => {
 });
 ```
 
-- [ ] **Step 2: Verificación manual**
+- [x] **Step 2: Verificación manual**
 
 Run: `npm run tauri dev` — Expected:
 - Aprender → «Enviar un correo» abre el asistente con "Paso 1 de 3".
@@ -1549,7 +1549,7 @@ Run: `npm run tauri dev` — Expected:
 
 Run: `npm test` — Expected: todos pasan (sin regresiones).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add -A && git commit -m "feat: ruta del visor de guías integrada"
