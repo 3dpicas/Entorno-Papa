@@ -475,7 +475,7 @@ git add -A && git commit -m "feat: contenido inicial con schema, validador y CI"
 - Produces: `parsearManifest(textoJson: string): { version, secciones }` — lanza `Error` con mensaje claro si es inválido; filtra tarjetas de tipo desconocido. `TIPOS_CONOCIDOS = ['enlace', 'guia']`.
 - Consumes: formato manifest de Task 3.
 
-- [ ] **Step 1: Tests que fallan**
+- [x] **Step 1: Tests que fallan**
 
 `tests/manifest.test.js`:
 
@@ -527,7 +527,7 @@ describe('parsearManifest', () => {
 
 Run: `npm test` — Expected: FAIL (módulo no existe).
 
-- [ ] **Step 2: Implementación**
+- [x] **Step 2: Implementación**
 
 `src/lib/manifest.js`:
 
@@ -564,11 +564,11 @@ function filtrarTarjetas(tarjetas = []) {
 }
 ```
 
-- [ ] **Step 3: Verificar**
+- [x] **Step 3: Verificar**
 
 Run: `npm test` — Expected: todos pasan.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A && git commit -m "feat: parser del manifest con tolerancia a tipos futuros"

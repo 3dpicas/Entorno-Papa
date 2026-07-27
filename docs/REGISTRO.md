@@ -6,10 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** ✅ **Bloque 0 cerrado** (Tareas 1, 2 y 3 hechas y verificadas)
-- **Siguiente paso:** Bloque 1, Tarea 4 — parser del manifest (`src/lib/manifest.js` + `tests/manifest.test.js`), TDD.
-- **Repos:** los tres en el tag `bloque-0` — raíz `335373c` (su HEAD sigue avanzando con los commits de documentación) · `entorno-app` `d4087de` · `entorno-contenido` `d8d716d`
-- **Última sesión:** 2026-07-26/27 — scaffolding de los dos repos; Vitest en verde (5 tests); validador de contenido en verde y probado también en fallo; se instaló el toolchain de Rust + MSVC y la app compiló y abrió ventana maximizada.
+- **Fase:** 🔨 **Bloque 1 en curso** — Tarea 4 hecha; toca la Tarea 5.
+- **Siguiente paso:** Bloque 1, Tarea 5 — router hash + pantalla Inicio (`src/lib/router.js`, `src/ui/inicio.js` + sus tests), TDD.
+- **Repos:** `entorno-app` @ `1da03ba` (por delante del tag `bloque-0`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Última sesión:** 2026-07-27 — arrancado el Bloque 1 con la Tarea 4 (parser del manifest, TDD, 11 tests en verde).
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -85,7 +85,13 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## BLOQUE 1 — Núcleo del panel
 
-*(sin tareas ejecutadas aún)*
+### Tarea 4: parser del manifest (JS) — HECHA (2026-07-27)
+
+- **Commits:** `1da03ba` (entorno-app)
+- **Verificado:** ciclo TDD completo. `npm test` con el test escrito y sin implementación → `Failed to resolve import "../src/lib/manifest.js"`, `Test Files 1 failed | 1 passed (2)`. Tras crear `src/lib/manifest.js` → `Test Files 2 passed (2)`, `Tests 11 passed (11)`.
+- **Desviaciones del plan:** Ninguna. El test y la implementación son literalmente los del plan.
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:** El parser no valida `url`/`guia` de cada tarjeta (eso lo cubre el schema Ajv del repo de contenido, no la app). La app confía en que el contenido pasó el CI; si llegara un manifest con una tarjeta `enlace` sin `url`, `parsearManifest` la dejaría pasar y el fallo saldría al pulsar. Aceptable en v1 porque el contenido es propio y validado en origen.
 
 ---
 
