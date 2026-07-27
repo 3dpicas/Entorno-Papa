@@ -1572,7 +1572,7 @@ git add -A && git commit -m "feat: ruta del visor de guías integrada"
   - `reemplazar_contenido(dir_contenido: &Path, dir_nuevo: &Path) -> Result<(), String>` (swap con rollback).
   - `MetaContenido { sha: String, version: u64, fecha: String }` + `leer_meta(ruta) -> MetaContenido` + `guardar_meta(ruta, &MetaContenido) -> Result<(), String>`.
 
-- [ ] **Step 1: Dependencias**
+- [x] **Step 1: Dependencias**
 
 En `src-tauri/Cargo.toml` añadir:
 
@@ -1586,7 +1586,7 @@ chrono = "0.4"
 tempfile = "3"
 ```
 
-- [ ] **Step 2: Tests que fallan**
+- [x] **Step 2: Tests que fallan**
 
 En `src-tauri/src/sync.rs`, escribir primero el módulo de tests:
 
@@ -1679,7 +1679,7 @@ mod tests {
 
 Run: `cd src-tauri && cargo test` — Expected: FAIL (funciones no definidas).
 
-- [ ] **Step 3: Implementación**
+- [x] **Step 3: Implementación**
 
 En `src-tauri/src/sync.rs`, encima de los tests:
 
@@ -1770,11 +1770,11 @@ pub fn reemplazar_contenido(dir_contenido: &Path, dir_nuevo: &Path) -> Result<()
 
 Y en `src-tauri/src/lib.rs` añadir `mod sync;`.
 
-- [ ] **Step 4: Verificar**
+- [x] **Step 4: Verificar**
 
 Run: `cargo test` (en `src-tauri/`) — Expected: 7 tests pasan.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A && git commit -m "feat: validación de contenido, swap atómico y meta (sync parte 1)"

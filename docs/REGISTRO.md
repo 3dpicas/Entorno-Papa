@@ -6,10 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** ✅ **Bloque 2 cerrado** (Tareas 9, 10 y 11 hechas y verificadas)
-- **Siguiente paso:** Bloque 3, Tarea 12 — validación de contenido, swap atómico y meta en Rust (`src-tauri/src/sync.rs`), TDD con `cargo test`. Empieza añadiendo `chrono` y `tempfile` (dev-dependency) a `Cargo.toml`.
-- **Repos:** `entorno-app` @ `be17c9d` / tag `bloque-2` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
-- **Última sesión:** 2026-07-27 — Bloques 1 y 2 completos: parser del manifest, router, pantallas Inicio y Sección, enlaces al navegador, integración con el contenido real, parser de guías y visor paso a paso. 34 tests JS en verde y todo comprobado con la app en marcha.
+- **Fase:** 🔨 **Bloque 3 en curso** — Tarea 12 hecha; toca la Tarea 13.
+- **Siguiente paso:** Bloque 3, Tarea 13 — descarga desde GitHub y comando `sync_now` (`reqwest` + `zip` en `sync.rs`, comandos registrados en `lib.rs`), TDD.
+- **Repos:** `entorno-app` @ `f200d29` (por delante del tag `bloque-2`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Última sesión:** 2026-07-27 — Bloques 1 y 2 completos (manifest, router, Inicio, Sección, enlaces al navegador, parser de guías y visor paso a paso) y arranque del Bloque 3 con las funciones puras de sync. 34 tests JS + 7 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -234,7 +234,17 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## BLOQUE 3 — Sincronización de contenido
 
-*(sin tareas ejecutadas aún)*
+### Tarea 12: validación y swap atómico (Rust, funciones puras) — HECHA (2026-07-27)
+
+- **Commits:** `f200d29` (entorno-app)
+- **Verificado:** ciclo TDD completo, esta vez en Rust. `cargo test` con solo el módulo de tests → `error[E0425]: cannot find function 'validar_contenido' in this scope` (y lo mismo para `reemplazar_contenido`, `leer_meta`, `guardar_meta`, `MetaContenido`). Tras implementar → `test result: ok. 7 passed; 0 failed`, con los 7 casos: manifest válido devuelve `version=7`, manifest roto y guía ausente dan error (el mensaje incluye `no-existe.md`), swap con y sin contenido previo, y meta de ida y vuelta más meta ausente que devuelve el `Default`. `npm test` sigue en 34.
+- **Desviaciones del plan:** `sync.rs` lleva `#![allow(dead_code)]` con un comentario explicando que quien usará estas funciones es el `sync_now` de la Tarea 13. Sin él, `cargo test` suelta 6 warnings de «never used» en cada compilación, porque de momento solo las llaman los tests.
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:**
+  1. **`validar_contenido` valida menos que el CI del repo de contenido.** Aquí solo se comprueba que el JSON parsea, que hay `version` y `secciones`, y que los ficheros de guía existen. El `check.mjs` del repo de contenido además valida contra el schema Ajv (patrones de `id`, formato de color, `url` obligatoria en las tarjetas de enlace, exclusión mutua de `tarjetas`/`grupos`) y comprueba los iconos. Es una red de seguridad de última hora, no el validador de verdad: si alguien sube contenido saltándose el CI, la app lo aceptaría.
+  2. `reemplazar_contenido` hace dos `rename` y no es atómico de verdad: si el proceso muere justo entre apartar lo viejo y activar lo nuevo, queda `contenido.old` y ningún `contenido`. El rollback cubre el fallo del segundo `rename`, no un corte de luz. Aceptable porque el primer arranque repuebla desde la semilla (Tarea 14).
+  3. `chrono` está en `Cargo.toml` pero todavía no se usa: la fecha de la meta la rellena la Tarea 13.
+  4. **Flake de entorno:** el primer `cargo test` falló con `LINK : fatal error LNK1104: no se puede abrir el archivo ...\app-*.exe` (binario de test aún bloqueado por la ejecución anterior). Repetir el comando lo arregló; no hay que tocar nada.
 
 ---
 
