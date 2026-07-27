@@ -1794,7 +1794,7 @@ git add -A && git commit -m "feat: validación de contenido, swap atómico y met
   - Command `estado_sync(app) -> EstadoSync` (lee meta local sin tocar red).
   - `extraer_zip(bytes: &[u8], destino: &Path) -> Result<PathBuf, String>` (devuelve carpeta raíz interna del zip).
 
-- [ ] **Step 1: Dependencias de red**
+- [x] **Step 1: Dependencias de red**
 
 En `src-tauri/Cargo.toml`:
 
@@ -1803,7 +1803,7 @@ reqwest = { version = "0.12", features = ["json"] }
 zip = "2"
 ```
 
-- [ ] **Step 2: Test de extraer_zip que falla**
+- [x] **Step 2: Test de extraer_zip que falla**
 
 Añadir al módulo de tests de `sync.rs`:
 
@@ -1828,7 +1828,7 @@ Añadir al módulo de tests de `sync.rs`:
 
 Run: `cargo test` — Expected: FAIL.
 
-- [ ] **Step 3: Implementación red + orquestación**
+- [x] **Step 3: Implementación red + orquestación**
 
 Añadir a `sync.rs`:
 
@@ -1979,12 +1979,12 @@ Nota: `log::` requiere el plugin de log de Task 16; hasta entonces usar `eprintl
 eprintln!("sync: ...");
 ```
 
-- [ ] **Step 4: Verificar**
+- [x] **Step 4: Verificar**
 
 Run: `cargo test` — Expected: 8 tests pasan.
 Run: `cargo check` — Expected: sin errores (comandos registrados).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A && git commit -m "feat: descarga desde GitHub y comando sync_now (sync parte 2)"

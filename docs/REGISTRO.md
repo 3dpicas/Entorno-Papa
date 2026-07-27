@@ -6,10 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 3 en curso** — Tarea 12 hecha; toca la Tarea 13.
-- **Siguiente paso:** Bloque 3, Tarea 13 — descarga desde GitHub y comando `sync_now` (`reqwest` + `zip` en `sync.rs`, comandos registrados en `lib.rs`), TDD.
-- **Repos:** `entorno-app` @ `f200d29` (por delante del tag `bloque-2`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
-- **Última sesión:** 2026-07-27 — Bloques 1 y 2 completos (manifest, router, Inicio, Sección, enlaces al navegador, parser de guías y visor paso a paso) y arranque del Bloque 3 con las funciones puras de sync. 34 tests JS + 7 tests Rust en verde.
+- **Fase:** 🔨 **Bloque 3 en curso** — Tareas 12 y 13 hechas; toca la Tarea 14.
+- **Siguiente paso:** Bloque 3, Tarea 14 — contenido semilla para el primer arranque (`scripts/actualizar-semilla.mjs`, `copiar_dir` + `asegurar_contenido_inicial` en `contenido.rs`, `bundle.resources` en `tauri.conf.json`).
+- **Repos:** `entorno-app` @ `6f5cb27` (por delante del tag `bloque-2`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Última sesión:** 2026-07-27/28 — Bloques 1 y 2 completos (manifest, router, Inicio, Sección, enlaces al navegador, parser de guías y visor paso a paso) y Bloque 3 a medias: funciones puras de sync y descarga desde GitHub con `sync_now`. 34 tests JS + 8 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -245,6 +245,21 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
   2. `reemplazar_contenido` hace dos `rename` y no es atómico de verdad: si el proceso muere justo entre apartar lo viejo y activar lo nuevo, queda `contenido.old` y ningún `contenido`. El rollback cubre el fallo del segundo `rename`, no un corte de luz. Aceptable porque el primer arranque repuebla desde la semilla (Tarea 14).
   3. `chrono` está en `Cargo.toml` pero todavía no se usa: la fecha de la meta la rellena la Tarea 13.
   4. **Flake de entorno:** el primer `cargo test` falló con `LINK : fatal error LNK1104: no se puede abrir el archivo ...\app-*.exe` (binario de test aún bloqueado por la ejecución anterior). Repetir el comando lo arregló; no hay que tocar nada.
+
+### Tarea 13: descarga desde GitHub y comando sync_now — HECHA (2026-07-28)
+
+- **Commits:** `6f5cb27` (entorno-app)
+- **Verificado:**
+  - TDD: `cargo test` con el test de `extraer_zip` y sin implementación → `error[E0425]: cannot find function 'extraer_zip' in this scope`. Tras implementar → `test result: ok. 8 passed; 0 failed`. `cargo check` sin errores ni warnings con `reqwest 0.12.28` y `zip 2` compilados.
+  - **Comandos registrados de verdad, no solo compilando:** con la app en marcha, invocados desde la página por CDP → `estado_sync` devuelve `{"estado":"sin_datos","sha":"","version":0,"fecha":"","detalle":null}` (aún no hay meta guardada) y `sync_now` devuelve `{"estado":"dev",...,"detalle":"sync desactivado en dev"}`, que es exactamente la salida prevista para una build de depuración.
+- **Desviaciones del plan:** el plan avisaba de usar `eprintln!` en vez de `log::warn!`/`log::info!` hasta la Tarea 16. No hizo falta: el crate `log` ya es dependencia desde el scaffolding, así que las macros compilan. Lo que la Tarea 16 tiene que resolver es que haya un logger instalado en producción (hoy `tauri-plugin-log` solo se registra bajo `debug_assertions`), no las llamadas.
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:**
+  1. **La sincronización real no se ha ejercitado nunca.** `sync_now` corta en seco en dev y `entorno-contenido` no está en GitHub, así que `obtener_sha_remoto`, `descargar_zip_remoto` y el camino completo de `sincronizar` no han hecho una sola petición. La primera prueba de verdad exige subir el repo de contenido y una build de release: es el mayor riesgo abierto del proyecto.
+  2. Las URLs de GitHub llevan la rama `main` incrustada (`/commits/main`, `/zip/refs/heads/main`). Los repos locales están en `master`. Al subirlos hay que renombrar la rama a `main` o cambiar estas dos cadenas; si no, el sync fallará silenciosamente con un 404.
+  3. `sincronizar` descarga el zip entero en memoria (`Vec<u8>`) antes de extraerlo. Con un repo de contenido pequeño da igual; si algún día se llena de imágenes, conviene ir a fichero temporal.
+  4. `extraer_zip` llama a `ZipArchive::extract`, que no protege contra entradas con rutas tipo `../` (zip slip). La fuente es un zip generado por GitHub a partir de un repo propio, así que el riesgo es teórico, pero queda dicho.
+  5. `estado_sync` devuelve `sin_datos` con `version: 0`; la pantalla de admin (Tarea 15) tendrá que distinguir ese caso del de un contenido de versión 0.
 
 ---
 
