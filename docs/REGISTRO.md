@@ -6,9 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 4 en curso** (Tarea 17 hecha; Bloque 3 cerrado)
-- **Siguiente paso:** Bloque 4, Tarea 18 — auto-actualización: `npm run tauri add updater` + `process`, clave de firma con `npx tauri signer generate`, `pubkey`/`endpoints` en `tauri.conf.json`, `check()` al arrancar y workflow `release.yml` con los secretos `TAURI_SIGNING_PRIVATE_KEY*`.
-- **Repos:** `entorno-app` @ `622568b` / tag `bloque-3` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Fase:** 🔨 **Bloque 4 en curso** (Tareas 17 y 18 hechas; Bloque 3 cerrado)
+- **Siguiente paso:** Bloque 4, Tarea 19 — prueba del ciclo completo: instalar la v0.1.0 de la release, publicar una v0.1.1 y ver la app actualizarse sola; luego un push al repo de contenido con `version: 2` y comprobar que la tarjeta nueva aparece sin reinstalar. El Step 3 (instalar en los dos PCs del padre) es trabajo manual del autor.
+- **Repos:** `entorno-app` @ `c3e841f` / tags `bloque-3` y `v0.1.0` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Release publicada:** `v0.1.0` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. La clave privada de firma vive en `%USERPROFILE%\.tauri\entorno-papa.key` y su contraseña en el gestor del autor; ambas están también como secretos del repo.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
 - **Última sesión:** 2026-07-28 — Tarea 17: icono propio, instalador NSIS en español instalado y probado, y de paso saldada la deuda de metadatos de `Cargo.toml`, rotación del log y regeneración automática de la semilla. **El binario ya no es `app.exe` sino `entorno-papa.exe`.** 39 tests JS + 9 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
@@ -398,7 +399,31 @@ Hito, no tarea del plan: es lo que desbloquea todo el Bloque 3 y lo que más rie
   1. El instalador **no está firmado con certificado de código**, así que Windows SmartScreen avisará al ejecutarlo en una máquina nueva. La firma del updater (Tarea 18) es otra cosa distinta: sirve para que la app confíe en la actualización, no para que Windows confíe en el instalador.
   2. Queda por comprobar la instalación **en una máquina limpia**: aquí NSIS reutilizó la ruta de una instalación previa (`B:\03_Recursos\Software\…`), no la de por defecto.
   3. La rotación del log está configurada pero no ejercitada: haría falta un log de más de 1 MB para verla rotar. Además `leer_log_reciente` solo lee `entorno.log`, así que tras rotar no verá lo que quedó en los ficheros con fecha.
-  4. Sigue ahí el `Entorno de Papa.log` huérfano de 0 bytes de la Tarea 16.
+  4. **Corrección a la deuda de la Tarea 16:** el `Entorno de Papa.log` huérfano **no se puede borrar «a mano y ya está»**: se comprobó borrándolo y reabriendo la app, y `tauri-plugin-log` lo vuelve a crear vacío en cada arranque, junto al `entorno.log` de verdad. Son 0 bytes y no molestan; lo que no vale es la instrucción de borrarlo como si fuera un resto de una sola vez.
+
+### Tarea 18: auto-actualización de la app — HECHA (2026-07-28)
+
+- **Commits:** `c3e841f` (entorno-app) · tag `v0.1.0`
+- **Verificado:**
+  - TDD del frontend: `npm test` con el test escrito y sin implementación → `Failed to resolve import "../src/lib/actualizacion.js"`, `Test Files 1 failed | 10 passed (11)`. Tras crear `src/lib/actualizacion.js` → `Test Files 11 passed (11)`, `Tests 43 passed (43)`. `cargo test` sigue en `9 passed`.
+  - **Firma, probada antes de tocar GitHub:** `npm run tauri build` en local con las variables de firma puestas → `Finished 1 updater signature at: …\Entorno de Papa_0.1.0_x64-setup.exe.sig` (428 bytes).
+  - **Release publicada de verdad:** workflow `release` en verde en 7 m 45 s; `v0.1.0` (`Entorno de Papá v0.1.0`, no borrador) con los tres artefactos: `Entorno.de.Papa_0.1.0_x64-setup.exe` (3,62 MB), su `.sig` (428 B) y `latest.json` (1,3 KB).
+  - **El endpoint que consultará la app, consultado:** `curl` a `https://github.com/3dpicas/entorno-app/releases/latest/download/latest.json` devuelve `version: 0.1.0`, la firma en base64 y la URL de descarga, con las dos claves de plataforma `windows-x86_64` y `windows-x86_64-nsis`.
+- **Desviaciones del plan:**
+  1. **Los repos de GitHub ya existían** (se publicaron en el Bloque 3) y están bajo `3dpicas`, no `marquib3l`. Del Step 4 solo quedaban los secretos, puestos con `gh secret set` sobre `3dpicas/entorno-app`. `gh` resultó estar instalado y autenticado como `3dpicas`.
+  2. **`actualizarApp` no vive en `main.js`, sino en `src/lib/actualizacion.js` con `comprobar` y `relanzar` inyectados.** Tal como lo escribía el plan (llamando directamente a `check`/`relaunch` importados) no había forma de probarlo sin Tauri delante, y este proyecto va por TDD. `main.js` solo lo cablea: `actualizarApp({ comprobar: check, relanzar: relaunch })`. De paso el test cubre un caso que el plan no contemplaba: que falle la *instalación* (no solo la comprobación) tampoco debe lanzar ni relanzar.
+  3. `npm run tauri add updater` creó un `capabilities/desktop.json` nuevo en vez de tocar `default.json`; se le añadió a mano `process:default`, que el CLI no puso.
+  4. El workflow no lleva el `npm run semilla || true` del plan: sobra desde la Tarea 17, porque el `beforeBuildCommand` ya la ejecuta y el script conserva la semilla commiteada cuando no encuentra el repo hermano.
+  5. `node-version: 22` en vez de 20, por el mínimo que pide Vite 8.
+  6. `npm run tauri add` volvió a dejar el fichero basura `src-tauri/2` y a pasar `cargo fmt` por `contenido.rs` y `sync.rs`. Se borró el fichero y se revisó el reformateo con `git diff -w`: solo saltos de línea, ni una línea de lógica cambiada — importante, porque `sync.rs` es de las piezas que el protocolo prohíbe tocar sin plan.
+- **Decisiones nuevas:**
+  - **Clave de firma con contraseña aleatoria** (elegido por el autor frente a la opción sin contraseña). Privada en `%USERPROFILE%\.tauri\entorno-papa.key`, fuera de todo repo; pública en `tauri.conf.json`; ambas en los secretos del repo. **Si se pierden la clave o la contraseña, los PCs del padre dejan de aceptar actualizaciones y hay que reinstalar a mano.**
+  - `bundle.createUpdaterArtifacts: true`, que es lo que hace que el bundler emita el `.sig`.
+- **Pendientes que deja:**
+  1. **Trampa que costó un release fallido** (el primer intento del workflow murió con `failed to decode secret key: incorrect updater private key password: Wrong password for that key`): la contraseña se había guardado con `Set-Content -Encoding utf8` de **PowerShell 5.1, que escribe BOM**. `gh secret set --body "$(cat …)"` desde bash mandó los tres bytes `EF BB BF` pegados delante de la contraseña. En local no se notaba porque `Get-Content -Raw` sí quita el BOM, así que la build local firmaba bien y la de CI no. Comprobado con `od -c`. **Para cualquier secreto que salga de un fichero escrito por PowerShell: verificar los primeros bytes.**
+  2. La actualización automática **está publicada pero todavía no vista funcionar**: eso es la Tarea 19, que necesita una v0.1.1 que descargar.
+  3. El instalador no lleva firma de código (certificado): SmartScreen avisará en un equipo nuevo. La firma del updater es otra cosa, sirve para que la app confíe en la actualización.
+  4. Los `actions/checkout@v4` y `setup-node@v4` avisan de que Node 20 está obsoleto en los runners. Es aviso, no error.
 
 ---
 

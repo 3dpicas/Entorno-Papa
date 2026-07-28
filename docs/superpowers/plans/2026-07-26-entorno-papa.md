@@ -2510,7 +2510,7 @@ git add -A && git commit -m "feat: icono e instalador NSIS en español"
 - Consumes: GitHub Releases del repo `entorno-app`.
 - Produces: app que se auto-actualiza al arrancar (silencioso, relanza tras instalar); workflow que publica release + `latest.json` al pushear un tag `v*`.
 
-- [ ] **Step 1: Plugins y claves de firma**
+- [x] **Step 1: Plugins y claves de firma**
 
 ```bash
 npm run tauri add updater
@@ -2520,7 +2520,7 @@ npx tauri signer generate -w "$HOME/.tauri/entorno-papa.key"
 
 Guardar la clave privada y su contraseña fuera del repo (el archivo `.key` NO se commitea nunca). Copiar la clave pública que imprime el comando.
 
-- [ ] **Step 2: Configuración del updater**
+- [x] **Step 2: Configuración del updater**
 
 En `tauri.conf.json`:
 
@@ -2529,7 +2529,7 @@ En `tauri.conf.json`:
   "updater": {
     "pubkey": "<CLAVE_PUBLICA_GENERADA_EN_STEP_1>",
     "endpoints": [
-      "https://github.com/marquib3l/entorno-app/releases/latest/download/latest.json"
+      "https://github.com/3dpicas/entorno-app/releases/latest/download/latest.json"
     ]
   }
 },
@@ -2542,7 +2542,7 @@ En `tauri.conf.json`:
 
 En `capabilities/default.json` añadir permisos: `"updater:default"`, `"process:default"`.
 
-- [ ] **Step 3: Comprobación al arrancar (frontend)**
+- [x] **Step 3: Comprobación al arrancar (frontend)**
 
 En `src/main.js`:
 
@@ -2565,7 +2565,7 @@ async function actualizarApp() {
 
 Llamar `actualizarApp()` al final de `arrancar()` (tras pintar la UI: si hay update, la app se relanza sola en segundos; si no, no se nota nada).
 
-- [ ] **Step 4: Crear repos en GitHub y secretos**
+- [x] **Step 4: Crear repos en GitHub y secretos** *(los repos ya estaban creados desde el Bloque 3; aquí solo los secretos, y bajo `3dpicas`, no `marquib3l`)*
 
 ```bash
 cd /b/01_Proyectos/Entorno-para-Papa/entorno-contenido
@@ -2577,7 +2577,7 @@ gh secret set TAURI_SIGNING_PRIVATE_KEY < "$HOME/.tauri/entorno-papa.key"
 gh secret set TAURI_SIGNING_PRIVATE_KEY_PASSWORD --body "<contraseña elegida en Step 1>"
 ```
 
-- [ ] **Step 5: Workflow de release**
+- [x] **Step 5: Workflow de release**
 
 `.github/workflows/release.yml`:
 
@@ -2611,11 +2611,11 @@ jobs:
 
 Nota: `npm run semilla` falla en CI porque `entorno-contenido` no está como carpeta hermana; por eso el `|| true`. La semilla se commitea en el repo de la app (quitar `recursos/contenido-semilla` del `.gitignore` si estuviera) para que CI la empaquete tal cual. Ejecutar `npm run semilla` + commit antes de cada tag.
 
-- [ ] **Step 6: Verificar**
+- [x] **Step 6: Verificar**
 
 ```bash
 git add -A && git commit -m "feat: auto-actualización con updater firmado"
-git tag v0.1.0 && git push origin master --tags
+git tag v0.1.0 && git push origin main --tags
 ```
 
 Expected: Action `release` en verde; release `v0.1.0` en GitHub con `*-setup.exe`, `*-setup.nsis.zip.sig` y `latest.json`.
