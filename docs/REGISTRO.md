@@ -8,7 +8,8 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 - **Fase:** 🔨 **Bloque 4 casi cerrado** (Tareas 17 y 18 hechas; Tarea 19 con los Steps 1 y 2 verificados)
 - **Siguiente paso:** **Step 3 de la Tarea 19, y lo tiene que hacer el autor en persona:** instalar en los dos PCs del padre (portátil y torre) con el checklist del plan. Hecho eso, se cierra el Bloque 4 (tag `bloque-4`) y empieza el Bloque 5 — contenido real. Nada más está bloqueado.
-- **Repos:** `entorno-app` @ `59d0ec1` / tags `bloque-3`, `v0.1.0`, `v0.1.1` · `entorno-contenido` @ `7595bed` / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Repos:** `entorno-app` @ `59d0ec1` / tags `bloque-3`, `v0.1.0`, `v0.1.1` · `entorno-contenido` @ `a6eead9` (contenido v3) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Primer PC del padre ya instalado** (2026-07-28): v0.1.1 funcionando; el único fallo que encontró usándola fue el enlace del solitario, ya corregido en el contenido v3. Queda el segundo equipo.
 - **Releases publicadas:** `v0.1.0` y `v0.1.1` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar a los PCs del padre:** el `Entorno.de.Papa_0.1.1_x64-setup.exe` de la release v0.1.1.
 - **Clave de firma:** privada en `%USERPROFILE%\.tauri\entorno-papa.key`, contraseña en el gestor del autor, ambas también como secretos de `3dpicas/entorno-app`. Si se pierden, los PCs del padre dejan de aceptar actualizaciones y hay que reinstalar a mano.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
@@ -445,6 +446,15 @@ Hito, no tarea del plan: es lo que desbloquea todo el Bloque 3 y lo que más rie
   1. **Step 3 sin hacer: instalar en los dos PCs del padre.** Es trabajo presencial del autor. Checklist en el plan: acceso directo con icono verde, contenido visible al abrir, Ctrl+Shift+A correcto, un periódico abriendo en el navegador que use él, y la prueba sin WiFi.
   2. **La actualización de la app no deja rastro en `entorno.log`.** `actualizarApp` usa `console.info`/`console.error`, que se quedan en la consola del WebView; el log a fichero solo recoge lo que escribe Rust. Lo mismo le pasa a `sincronizar()`. Si una actualización falla en el PC del padre, el log —que es la única ventana que hay a esa máquina— no dirá nada. No es regresión de esta tarea (viene de antes), pero contradice el espíritu de la spec §8 y conviene resolverlo antes de dar la v1 por buena.
   3. El instalador sigue sin firma de código: en los equipos del padre saldrá el aviso de SmartScreen la primera vez.
+
+### Contenido v3: arreglada la URL del solitario — 2026-07-28
+
+Cambio de contenido, no tarea del plan (`PROTOCOLO.md` § escalabilidad). Se anota porque **cierra el pendiente nº 7 del Bloque 3**, arrastrado desde la Tarea 8.
+
+- **Commit:** `a6eead9` (entorno-contenido) · CI `check` en verde.
+- **Qué pasó:** lo detectó el padre usando la app en su PC, no una prueba: era el único enlace que no abría. `https://www.solitr.com/es` **nunca ha existido** —da 404, y también `/solitario`—; la que funciona es la raíz `https://www.solitr.com/`. Elegida por el autor entre tres candidatas: es la más limpia (sin anuncios ni registro, cartas grandes, la partida ya montada al entrar) a cambio de que sus tres botones estén en inglés, cosa que no hace falta leer para jugar.
+- **Verificado:** `npm run check` → `Contenido OK`, y **las seis URLs del manifest comprobadas una a una con `curl`, todas 200** (elpais, elmundo, abc, marca, solitr, tetris). Es lo que debería haberse hecho en el Bloque 0, cuando las URLs se escribieron sin comprobar.
+- **Aprendido:** el validador `check.mjs` valida el *formato* de las URLs (`^https?://`) pero nunca las visita. Un enlace roto pasa el CI sin problema. Comprobarlas de verdad es candidato claro para el Bloque 5, donde entra el contenido definitivo.
 
 ---
 
