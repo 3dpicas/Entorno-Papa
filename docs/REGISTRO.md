@@ -9,7 +9,7 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 - **Fase:** 🔨 **Bloque 3 en curso** — Tareas 12, 13, 14 y 15 hechas; toca la Tarea 16 (la última del bloque).
 - **Siguiente paso:** Bloque 3, Tarea 16 — log a archivo y pantalla admin oculta (`src/ui/admin.js` + `tests/admin.test.js`, comando `leer_log_reciente`, atajo Ctrl+Shift+A).
 - **Repos:** `entorno-app` @ `6ac7107` (por delante del tag `bloque-2`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
-- **GitHub (pendiente del autor):** usuario `3dpicas`. Existe `3dpicas/Entorno-Papa` (público, rama `main`) que hará de repo de documentación; faltan por crear `entorno-contenido` (público) y `entorno-app`, vacíos, para que el primer push no choque. Hasta que existan, el sync y el updater no se pueden probar de verdad.
+- **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
 - **Última sesión:** 2026-07-27/28 — Bloques 1 y 2 completos (manifest, router, Inicio, Sección, enlaces al navegador, parser de guías y visor paso a paso) y Bloque 3 a medias: funciones puras de sync y descarga desde GitHub con `sync_now`. 34 tests JS + 8 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
@@ -256,8 +256,8 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 - **Desviaciones del plan:** el plan avisaba de usar `eprintln!` en vez de `log::warn!`/`log::info!` hasta la Tarea 16. No hizo falta: el crate `log` ya es dependencia desde el scaffolding, así que las macros compilan. Lo que la Tarea 16 tiene que resolver es que haya un logger instalado en producción (hoy `tauri-plugin-log` solo se registra bajo `debug_assertions`), no las llamadas.
 - **Decisiones nuevas:** Ninguna.
 - **Pendientes que deja:**
-  1. **La sincronización real no se ha ejercitado nunca.** `sync_now` corta en seco en dev y `entorno-contenido` no está en GitHub, así que `obtener_sha_remoto`, `descargar_zip_remoto` y el camino completo de `sincronizar` no han hecho una sola petición. La primera prueba de verdad exige subir el repo de contenido y una build de release: es el mayor riesgo abierto del proyecto.
-  2. Las URLs de GitHub llevan la rama `main` incrustada (`/commits/main`, `/zip/refs/heads/main`). Los repos locales están en `master`. Al subirlos hay que renombrar la rama a `main` o cambiar estas dos cadenas; si no, el sync fallará silenciosamente con un 404.
+  1. ~~La sincronización real no se ha ejercitado nunca.~~ **RESUELTO el 2026-07-28**, ver «Publicación en GitHub» más abajo.
+  2. ~~Las URLs llevan la rama `main` incrustada y los repos locales están en `master`.~~ **RESUELTO:** las tres ramas se renombraron a `main` al publicar.
   3. `sincronizar` descarga el zip entero en memoria (`Vec<u8>`) antes de extraerlo. Con un repo de contenido pequeño da igual; si algún día se llena de imágenes, conviene ir a fichero temporal.
   4. `extraer_zip` llama a `ZipArchive::extract`, que no protege contra entradas con rutas tipo `../` (zip slip). La fuente es un zip generado por GitHub a partir de un repo propio, así que el riesgo es teórico, pero queda dicho.
   5. `estado_sync` devuelve `sin_datos` con `version: 0`; la pantalla de admin (Tarea 15) tendrá que distinguir ese caso del de un contenido de versión 0.
@@ -303,6 +303,26 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
   2. El indicador solo se repinta si ya había uno (`previo?.replaceWith(...)`). Como se añade siempre al arrancar, hoy funciona; si algún día se monta condicionalmente, el primer refresco se perdería.
   3. **El refresco tras «actualizado» no se ha probado nunca**, porque en dev nunca llega ese estado. `manifest = await cargarManifest()` + `dispatchEvent(new HashChangeEvent('hashchange'))` está escrito pero no ejercitado; si el usuario estuviera dentro de una guía en ese momento, el re-render la reiniciaría en el paso 1.
   4. El `setInterval` de 6 h no se cancela nunca (no hace falta: vive lo que vive la ventana).
+
+### Publicación en GitHub y prueba del sync real — 2026-07-28
+
+Hito, no tarea del plan: es lo que desbloquea todo el Bloque 3 y lo que más riesgo tenía.
+
+- **Repos publicados** (usuario `3dpicas`, los tres públicos, rama `main`):
+  - `3dpicas/Entorno-Papa` — documentación. Tenía ya un `README.md` creado desde la web, así que hubo que integrarlo con `git merge --allow-unrelated-histories` (commit `fd45706`) antes de poder subir.
+  - `3dpicas/entorno-app` — 63 ficheros, con los tags `bloque-0`, `bloque-1` y `bloque-2`.
+  - `3dpicas/entorno-contenido` — 10 ficheros, tag `bloque-0`.
+- **Ramas renombradas** de `master` a `main` en los tres repos locales, para que casen con las URLs del sync.
+- **Autenticación:** no hizo falta GitHub CLI. Git Credential Manager ya venía con Git 2.54 y tenía credenciales guardadas; se comprobó con `git push --dry-run` antes de subir nada.
+- **CI estrenado:** el workflow `check.yml` del repo de contenido, que llevaba desde el Bloque 0 sin ejecutarse nunca, arrancó solo con el push y terminó en `success`.
+- **Sync real, verificado de punta a punta** con el binario de release:
+  1. Primer arranque sin `contenido_meta.json`: la app consultó `api.github.com/repos/3dpicas/entorno-contenido/commits/main`, se bajó el zip, lo validó, hizo el swap y escribió la meta con `sha = d8d716d821ae63902670252e063dcd9c0f2b33b2` (el commit real del repo) y `version = 1`.
+  2. **La prueba de que el contenido viene de GitHub y no de la semilla:** `<appdata>/contenido` acabó conteniendo `.github/workflows/check.yml` y `.gitignore`, que la semilla no trae. No quedaron restos de `contenido.old` ni `descarga_tmp`.
+  3. Segunda llamada a `sync_now` → `sin_cambios`, sin volver a descargar.
+  4. Falseando el sha de la meta a ceros, `sync_now` → `actualizado`, con descarga, validación y swap otra vez.
+  5. Con la meta caducada **y reiniciando la app**, el flujo de arranque completo: sync → `actualizado` → manifest recargado → `hashchange` → las 3 secciones repintadas, meta nueva escrita e indicador mostrando `Contenido v1 · 28/07/2026`. Es el recorrido exacto que hará el PC del padre.
+- **Instalador probado por el autor:** instaló el NSIS en su máquina y la app abre y funciona.
+- **Lo que sigue sin probarse:** que un *push nuevo* al repo de contenido lo recoja la app (aquí se forzó falseando la meta local, no publicando un cambio). Y todo el Bloque 4: updater, Releases y firma.
 
 ---
 
