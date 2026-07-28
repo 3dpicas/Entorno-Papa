@@ -6,11 +6,11 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 3 en curso** — Tareas 12, 13, 14 y 15 hechas; toca la Tarea 16 (la última del bloque).
-- **Siguiente paso:** Bloque 3, Tarea 16 — log a archivo y pantalla admin oculta (`src/ui/admin.js` + `tests/admin.test.js`, comando `leer_log_reciente`, atajo Ctrl+Shift+A).
-- **Repos:** `entorno-app` @ `6ac7107` (por delante del tag `bloque-2`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Fase:** ✅ **Bloque 3 cerrado** (Tareas 12–16 hechas y verificadas, sync real incluido)
+- **Siguiente paso:** Bloque 4, Tarea 17 — icono e instalador NSIS en español (`recursos/icono.svg`, `scripts/generar-icono.mjs`, `npx tauri icon`, bundle NSIS con `installMode: currentUser`).
+- **Repos:** `entorno-app` @ `ec24738` / tag `bloque-3` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
-- **Última sesión:** 2026-07-27/28 — Bloques 1 y 2 completos (manifest, router, Inicio, Sección, enlaces al navegador, parser de guías y visor paso a paso) y Bloque 3 a medias: funciones puras de sync y descarga desde GitHub con `sync_now`. 34 tests JS + 8 tests Rust en verde.
+- **Última sesión:** 2026-07-27/28 — Bloques 1, 2 y 3 completos: panel navegable, visor de guías, sincronización de contenido desde GitHub, contenido semilla, indicador de versión, log a fichero y pantalla de mantenimiento. Los tres repos publicados y el sync real verificado de punta a punta. 39 tests JS + 9 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -323,6 +323,50 @@ Hito, no tarea del plan: es lo que desbloquea todo el Bloque 3 y lo que más rie
   5. Con la meta caducada **y reiniciando la app**, el flujo de arranque completo: sync → `actualizado` → manifest recargado → `hashchange` → las 3 secciones repintadas, meta nueva escrita e indicador mostrando `Contenido v1 · 28/07/2026`. Es el recorrido exacto que hará el PC del padre.
 - **Instalador probado por el autor:** instaló el NSIS en su máquina y la app abre y funciona.
 - **Lo que sigue sin probarse:** que un *push nuevo* al repo de contenido lo recoja la app (aquí se forzó falseando la meta local, no publicando un cambio). Y todo el Bloque 4: updater, Releases y firma.
+
+### Tarea 16: log a archivo + pantalla admin oculta — HECHA (2026-07-28)
+
+- **Commits:** `ec24738` (entorno-app)
+- **Verificado:**
+  - TDD: `npm test` sin implementación → `Failed to resolve import "../src/ui/admin.js"`. Tras implementar → `Test Files 10 passed (10)`, `Tests 39 passed (39)`. `cargo test` sigue en `9 passed`.
+  - **En dev:** Ctrl+Shift+A (evento de teclado despachado por CDP) abre el panel con `App: v0.1.0`, `Contenido: v1 (d8d716d)`, fecha del último sync y `Estado: sin_cambios`, más los botones «Forzar sincronización» y «Cerrar». El mismo atajo otra vez lo cierra. El log salía vacío, lo cual es correcto: en desarrollo nadie escribe en él.
+  - **En producción, que es donde importa:** borrados `contenido`, `contenido_meta.json` y `entorno.log`, y arrancado el binario de release. El log se escribió solo con las dos líneas que hacen falta para diagnosticar a distancia:
+    ```
+    [2026-07-28][17:06:01][app_lib::contenido][INFO] contenido semilla copiado a C:\Users\marqu\AppData\Roaming\com.marquibel.entorno\contenido
+    [2026-07-28][17:06:02][app_lib::sync][INFO] contenido actualizado a v1 (d8d716d821ae63902670252e063dcd9c0f2b33b2)
+    ```
+  - El panel admin muestra esas mismas líneas leídas por `leer_log_reciente`, y el botón «Forzar sincronización» ejecuta el sync y cierra el panel dejando la app intacta (3 secciones).
+  - Ruta del log: `%LOCALAPPDATA%\com.marquibel.entorno\logs\entorno.log`.
+- **Desviaciones del plan:**
+  1. No se ejecutó `npm run tauri add log`: `tauri-plugin-log` ya era dependencia desde el scaffolding del Bloque 0. Solo se cambió **cómo** se registra.
+  2. El plugin pasa de registrarse dentro de `.setup()` y solo bajo `debug_assertions`, a registrarse siempre en el builder con destino `LogDir`. En dev se le añade además `Stdout`. Sin este cambio no habría log en los PCs del padre, que es justamente donde no hay otra forma de ver qué pasó.
+  3. Tampoco hizo falta añadir `log = "0.4"` a `Cargo.toml` (ya estaba) ni sustituir `eprintln!` (nunca se llegaron a usar, ver Tareas 13 y 14).
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:**
+  1. Queda un fichero huérfano `Entorno de Papa.log` (0 bytes) de cuando el plugin usaba el nombre por defecto. Inofensivo; se puede borrar a mano.
+  2. El log **no rota ni se trunca nunca**. En años de uso puede crecer sin límite. `tauri-plugin-log` tiene `max_file_size` y política de rotación: conviene ponerlo antes de la entrega (Bloque 4).
+  3. El atajo se verificó despachando un `KeyboardEvent` por CDP, no pulsando teclas físicas. Lo que se probó es el manejador y el panel; que Windows entregue esa combinación a la ventana no se ha comprobado, aunque no hay motivo para que falle.
+  4. «Forzar sincronización» cierra el panel sin decir en qué acabó el sync. Para uso propio es suficiente, pero es un poco ciego: si falla, hay que reabrir el panel y mirar el log.
+
+## ✅ BLOQUE 3 cerrado (2026-07-28)
+
+- **Resultado verificable de la spec:** §10 → «Push en GitHub → la app refresca sola». Comprobado con el binario de release contra `3dpicas/entorno-contenido`: en el primer arranque la app consultó el sha real del repo, se bajó el zip, lo validó, hizo el swap y escribió la meta; el contenido resultante incluye `.github/workflows/check.yml`, que la semilla no trae, así que vino de GitHub y no del paquete local. Con la meta caducada y reiniciando, el ciclo completo se repitió y la interfaz se repintó sola con `Contenido v1 · 28/07/2026`. Matiz honesto: la parte de «push» se ejerció con el sha de un commit real ya publicado, no publicando un cambio nuevo durante la prueba.
+- **Estado de los repos:** entorno-app @ `ec24738` / tag `bloque-3` · entorno-contenido @ `d8d716d` / tag `bloque-0` · Entorno-Papa (docs) al día. Los tres publicados en GitHub bajo `3dpicas`, ramas `main`.
+- **Qué sabe hacer la app ahora:** al abrirse mira si hay contenido nuevo en GitHub y, si lo hay, se lo descarga y se actualiza sola sin decir nada; repite la comprobación cada seis horas. Si no hay red, sigue funcionando con lo último que tenga guardado, y en un PC recién instalado arranca con el contenido que viene dentro del instalador. Abajo a la derecha, en letra pequeña, indica qué versión de contenido tiene. Con Ctrl+Shift+A aparece una pantalla de mantenimiento, invisible para el usuario normal, con las versiones, el estado del último sync, el log reciente y un botón para forzar la actualización.
+- **Deuda/pendientes acumulados:**
+  1. Metadatos por defecto en `src-tauri/Cargo.toml` (`name = "app"`, `authors = ["you"]`) — Bloque 4.
+  2. El log no rota; puede crecer sin límite.
+  3. La semilla no se regenera sola al compilar (`npm run semilla` es manual) y arrastra ficheros que la app no usa.
+  4. `validar_contenido` (Rust) valida menos que el `check.mjs` del repo de contenido: es una red de última hora, no el validador de verdad.
+  5. `extraer_zip` no protege contra rutas `../` dentro del zip (zip slip). Fuente controlada, riesgo teórico.
+  6. El camino de imágenes de las guías sigue sin ejercitarse (`contenido_ruta` devuelve rutas con prefijo `\\?\`).
+  7. `https://www.solitr.com/es` da 404 en el manifest de ejemplo.
+  8. El HTML de las guías va a `innerHTML` sin sanear.
+  9. Sin probar: que un push nuevo al repo de contenido lo recoja la app sola.
+- **Notas para el futuro:**
+  - `cargo build --release` **no** da un binario de producción: `tauri-build` mantiene `cfg(dev)` y la ventana intenta cargar `localhost:5173`. Usar siempre `npm run tauri build`.
+  - Cerrar la app antes de compilar, o el enlazado falla con `Acceso denegado (os error 5)`.
+  - Para diagnosticar cualquier cosa en el PC del padre: Ctrl+Shift+A, o directamente `%LOCALAPPDATA%\com.marquibel.entorno\logs\entorno.log`.
 
 ---
 

@@ -2246,7 +2246,7 @@ git add -A && git commit -m "feat: bucle de sync con refresco silencioso e indic
 - Consumes: `estado_sync`, `sync_now` (Task 13).
 - Produces: command `leer_log_reciente() -> Vec<String>` (últimas 50 líneas del log); `renderAdmin({ versionApp, estado, lineasLog, alForzarSync, alCerrar }): HTMLElement`.
 
-- [ ] **Step 1: Plugin de log**
+- [x] **Step 1: Plugin de log**
 
 ```bash
 npm run tauri add log
@@ -2281,7 +2281,7 @@ fn leer_log_reciente(app: tauri::AppHandle) -> Vec<String> {
 
 Registrarlo en `invoke_handler`.
 
-- [ ] **Step 2: Tests del panel admin que fallan**
+- [x] **Step 2: Tests del panel admin que fallan**
 
 `tests/admin.test.js`:
 
@@ -2322,7 +2322,7 @@ describe('renderAdmin', () => {
 
 Run: `npm test` — Expected: FAIL.
 
-- [ ] **Step 3: Implementación del panel**
+- [x] **Step 3: Implementación del panel**
 
 `src/ui/admin.js`:
 
@@ -2378,7 +2378,7 @@ Estilos en `base.css`:
 .panel-admin button { min-height: 48px; margin-right: 16px; padding: 0 24px; font-size: 16px; }
 ```
 
-- [ ] **Step 4: Atajo de teclado en main.js**
+- [x] **Step 4: Atajo de teclado en main.js**
 
 ```js
 import { getVersion } from '@tauri-apps/api/app';
@@ -2403,12 +2403,12 @@ window.addEventListener('keydown', async (ev) => {
 });
 ```
 
-- [ ] **Step 5: Verificar**
+- [x] **Step 5: Verificar**
 
 Run: `npm test` — Expected: todos pasan.
 Run: `npm run tauri dev` → Ctrl+Shift+A — Expected: panel con versión de app, estado `dev`, log (posiblemente vacío). Ctrl+Shift+A otra vez lo cierra.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add -A && git commit -m "feat: log a archivo y pantalla admin oculta"
