@@ -6,9 +6,10 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 3 en curso** — Tareas 12 y 13 hechas; toca la Tarea 14.
-- **Siguiente paso:** Bloque 3, Tarea 14 — contenido semilla para el primer arranque (`scripts/actualizar-semilla.mjs`, `copiar_dir` + `asegurar_contenido_inicial` en `contenido.rs`, `bundle.resources` en `tauri.conf.json`).
-- **Repos:** `entorno-app` @ `6f5cb27` (por delante del tag `bloque-2`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Fase:** 🔨 **Bloque 3 en curso** — Tareas 12, 13 y 14 hechas; toca la Tarea 15.
+- **Siguiente paso:** Bloque 3, Tarea 15 — bucle de sync en el frontend e indicador discreto (`src/ui/indicador.js` + `tests/indicador.test.js`, cambios en `main.js`), TDD.
+- **Repos:** `entorno-app` @ `f3b3f5f` (por delante del tag `bloque-2`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **GitHub (pendiente del autor):** usuario `3dpicas`. Existe `3dpicas/Entorno-Papa` (público, rama `main`) que hará de repo de documentación; faltan por crear `entorno-contenido` (público) y `entorno-app`, vacíos, para que el primer push no choque. Hasta que existan, el sync y el updater no se pueden probar de verdad.
 - **Última sesión:** 2026-07-27/28 — Bloques 1 y 2 completos (manifest, router, Inicio, Sección, enlaces al navegador, parser de guías y visor paso a paso) y Bloque 3 a medias: funciones puras de sync y descarga desde GitHub con `sync_now`. 34 tests JS + 8 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
@@ -260,6 +261,32 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
   3. `sincronizar` descarga el zip entero en memoria (`Vec<u8>`) antes de extraerlo. Con un repo de contenido pequeño da igual; si algún día se llena de imágenes, conviene ir a fichero temporal.
   4. `extraer_zip` llama a `ZipArchive::extract`, que no protege contra entradas con rutas tipo `../` (zip slip). La fuente es un zip generado por GitHub a partir de un repo propio, así que el riesgo es teórico, pero queda dicho.
   5. `estado_sync` devuelve `sin_datos` con `version: 0`; la pantalla de admin (Tarea 15) tendrá que distinguir ese caso del de un contenido de versión 0.
+
+### Tarea 14: contenido semilla para el primer arranque — HECHA (2026-07-28)
+
+- **Commits:** `f3b3f5f` (entorno-app) · antes, `e4f3046` corrige el usuario de GitHub (ver «Decisiones nuevas»)
+- **Verificado:**
+  - `npm run semilla` → `Semilla actualizada desde entorno-contenido`, con `recursos/contenido-semilla/manifest.json`, `guias/ejemplo-correo.md`, `schema/`, `iconos/`, `img/`.
+  - TDD: `cargo test` sin implementación → `error[E0425]: cannot find function 'copiar_dir'`. Tras implementar → `test result: ok. 9 passed; 0 failed`.
+  - `npm run tauri build` genera los dos instaladores: `Entorno de Papa_0.1.0_x64-setup.exe` (2,58 MB, NSIS) y `Entorno de Papa_0.1.0_x64_en-US.msi` (4,01 MB, WiX; el CLI se descargó solo WiX 3.14 y NSIS 3.11 la primera vez).
+  - **Primer arranque de verdad:** borrado `%APPDATA%\com.marquibel.entorno\contenido` y ejecutado el binario de producción. La carpeta se recreó sola con `manifest.json`, `guias/ejemplo-correo.md` y el resto de la semilla, y la ventana pintó el panel completo —saludo «Buenas noches, Papá», reloj `03:06` y las 3 tarjetas de sección con sus colores— sin repo de desarrollo ni red. Captura revisada.
+  - La instalación del `.exe` en la máquina queda para el autor; lo verificado aquí es el mismo binario que el instalador empaqueta.
+- **Desviaciones del plan:**
+  1. **El glob `../recursos/contenido-semilla/**` no vale:** el build script aborta con `glob pattern ../recursos/contenido-semilla/** path not found or didn't match any files`. Hay que escribir `../recursos/contenido-semilla/**/*`.
+  2. **La ruta de la semilla dentro del paquete no es la del plan.** Tauri mete los recursos declarados con `../` bajo `_up_/`, así que quedan en `<recursos>/_up_/recursos/contenido-semilla`. El `resolve("recursos/contenido-semilla", Resource)` del plan nunca los habría encontrado y el primer arranque se habría quedado sin contenido. Ahora se buscan las dos rutas (`_up_/...` y la del plan) y se elige la que tenga `manifest.json`, para no depender de esa convención.
+  3. El plan añadía un `.setup()` nuevo al builder; se metió la llamada dentro del `.setup()` que ya existía, porque Tauri solo admite uno y el segundo habría sustituido al del logger.
+  4. `copiar_dir` lleva `#[cfg_attr(debug_assertions, allow(dead_code))]`: en dev nadie la llama, porque `asegurar_contenido_inicial` solo compila su cuerpo en release.
+  5. `asegurar_contenido_inicial` usa `log::warn!`/`log::info!` en vez del `eprintln!` del plan, por lo mismo que en la Tarea 13.
+- **Decisiones nuevas:**
+  - **Usuario de GitHub: `3dpicas`, no `marquib3l`.** Confirmado con el autor y con la API (`marquib3l` da 404; existe `3dpicas/Entorno-Papa`, público, rama por defecto `main`). `GITHUB_OWNER` cambiado en `config.rs` (`e4f3046`) y corregido el plan. `marquib3l` sigue siendo la identidad de los commits: son dos cosas distintas.
+  - **Reparto de repos, decidido por el autor:** los tres del plan. `3dpicas/Entorno-Papa` = documentación (este repo raíz); quedan por crear `entorno-contenido` (público) y `entorno-app`.
+- **Pendientes que deja:**
+  1. La semilla arrastra `package.json`, `package-lock.json` y `scripts/check.mjs` del repo de contenido, que no le sirven de nada a la app. El filtro del script solo excluye `node_modules` y `.git`. Son unos pocos KB; se puede afinar cuando moleste.
+  2. **La semilla no se regenera sola:** si alguien edita `entorno-contenido` y compila sin acordarse de `npm run semilla`, el instalador sale con contenido viejo. Conviene encadenarlo al `beforeBuildCommand` en el Bloque 4.
+  3. **Trampa importante para el futuro:** `cargo build --release` **no** produce un binario de producción. `tauri-build` sigue poniendo `cfg(dev)`, así que la ventana intenta cargar `http://localhost:5173` y muestra `ERR_CONNECTION_REFUSED`, mientras que `debug_assertions` sí está apagado (o sea, el contenido se lee de appdata). Para probar producción hay que usar `npm run tauri build`.
+  4. Otra trampa: si hay un `app.exe` abierto, `tauri build` falla con `error: failed to remove file ...\target\release\app.exe / Acceso denegado. (os error 5)`. Cerrar la app antes de compilar.
+  5. Al lanzar el ejecutable desde una shell no interactiva, la ventana abre **minimizada** (`showCmd = 2`) pese al `maximized: true`. Es cosa del `STARTUPINFO` heredado, no de la configuración; desde un acceso directo normal abre maximizada. Para capturarla hay que llamar antes a `ShowWindow(h, 3)`.
+  6. El proceso lanzado en segundo plano muere cuando termina la shell que lo lanzó: para inspeccionarlo hay que arrancarlo y capturarlo en la misma llamada.
 
 ---
 

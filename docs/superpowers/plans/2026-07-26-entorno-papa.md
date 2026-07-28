@@ -17,7 +17,7 @@
 - El padre **nunca ve mensajes de error**: los fallos van al log y se degradan en silencio.
 - La app funciona offline con el último contenido cacheado.
 - Tipos de tarjeta v1: `enlace` y `guia`. Tipos desconocidos se ignoran sin romper el render.
-- Repos GitHub: `marquib3l/entorno-app` (privado o público, con Releases públicas) y `marquib3l/entorno-contenido` (**público**, sin datos sensibles). Si el username real de GitHub difiere, se cambia en `src-tauri/src/config.rs` y en los workflows.
+- Repos GitHub: `3dpicas/entorno-app` (privado o público, con Releases públicas) y `3dpicas/entorno-contenido` (**público**, sin datos sensibles). El repo raíz de documentación es `3dpicas/Entorno-Papa`. *(Corregido el 2026-07-28: el plan decía `marquib3l`, que es la identidad git local, no el usuario de GitHub. `marquib3l` no existe como usuario en GitHub —la API da 404—; el real es `3dpicas`. Ya cambiado en `src-tauri/src/config.rs`.)*
 - Identidad git en cada repo nuevo: `user.name = marquib3l`, `user.email = marquib3l@gmail.com` (configurar sin preguntar).
 - Directorio raíz de trabajo: `B:\01_Proyectos\Entorno-para-Papa`. Los dos repos viven como subcarpetas hermanas: `entorno-app/` y `entorno-contenido/`.
 
@@ -2004,7 +2004,7 @@ git add -A && git commit -m "feat: descarga desde GitHub y comando sync_now (syn
 - Consumes: `dir_contenido` (Task 8).
 - Produces: `copiar_dir(origen: &Path, destino: &Path) -> Result<(), String>`; `asegurar_contenido_inicial(app: &tauri::AppHandle)` llamada en `setup` — si `<appdata>/contenido` no existe, copia la semilla empaquetada.
 
-- [ ] **Step 1: Script de semilla**
+- [x] **Step 1: Script de semilla**
 
 `scripts/actualizar-semilla.mjs`:
 
@@ -2033,7 +2033,7 @@ En `package.json`: `"semilla": "node scripts/actualizar-semilla.mjs"`.
 
 Run: `npm run semilla` — Expected: `recursos/contenido-semilla/manifest.json` existe.
 
-- [ ] **Step 2: Test Rust de copiar_dir que falla**
+- [x] **Step 2: Test Rust de copiar_dir que falla**
 
 En `contenido.rs`, módulo de tests:
 
@@ -2061,7 +2061,7 @@ mod tests {
 
 Run: `cargo test` — Expected: FAIL.
 
-- [ ] **Step 3: Implementar copiar_dir y semilla**
+- [x] **Step 3: Implementar copiar_dir y semilla**
 
 En `contenido.rs`:
 
@@ -2115,12 +2115,14 @@ En `tauri.conf.json`, en `bundle`:
 "resources": ["../recursos/contenido-semilla/**"]
 ```
 
-- [ ] **Step 4: Verificar**
+- [x] **Step 4: Verificar**
 
 Run: `cargo test` — Expected: todos pasan.
 Run: `npm run tauri build` (primera build completa) — Expected: instalador NSIS generado en `src-tauri/target/release/bundle/nsis/`. Instalarlo en la máquina del autor: la app abre con el contenido semilla (sin repo dev).
 
-- [ ] **Step 5: Commit**
+*(La instalación la hace el autor; aquí se verificó ejecutando el binario de producción `target/release/app.exe`, que es el mismo que empaqueta el instalador.)*
+
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A && git commit -m "feat: contenido semilla empaquetado para primer arranque"
