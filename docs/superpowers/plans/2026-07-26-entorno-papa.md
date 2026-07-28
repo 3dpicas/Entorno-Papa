@@ -2672,7 +2672,7 @@ git add -A && git commit -m "chore: ajustes post-instalación en equipos de dest
 **Interfaces:**
 - Consumes: convención de guías (Task 3), visor (Bloque 2).
 
-- [ ] **Step 1: Redactar los borradores de las 5 guías**
+- [x] **Step 1: Redactar los borradores de las 5 guías**
 
 El implementador escribe el contenido completo de cada guía (borrador real, no esqueleto), siguiendo estas reglas de redacción:
 - Un paso = una sola acción concreta ("Pulsa el botón azul que dice Redactar").
@@ -2687,17 +2687,17 @@ Guías y alcance:
 4. `carpetas-archivos.md` — abrir el Explorador, crear una carpeta en Documentos, mover un archivo arrastrando NO: con cortar/pegar del menú contextual (regla de un clic: usar clic derecho + opciones, no arrastrar).
 5. `fotos-movil-pc.md` — conectar el móvil por cable, permitir acceso en el móvil, abrir el Explorador, copiar fotos de DCIM a la carpeta Imágenes.
 
-- [ ] **Step 2: Capturas**
+- [ ] **Step 2: Capturas** *(el autor las hará más adelante; el visor tolera su ausencia)*
 
 El autor (usuario) hace las capturas reales en el PC del padre o en uno equivalente (mismo Windows 11 y navegador). Guardarlas como `img/correo-enviar-01.png`, etc. Hasta tenerlas, las guías se commitean sin imágenes (el visor las tolera).
 
-- [ ] **Step 3: Actualizar manifest y validar**
+- [x] **Step 3: Actualizar manifest y validar**
 
 Sección `aprender` con las 5 tarjetas `guia`. Subir `version`. Borrar `ejemplo-correo.md` y su tarjeta.
 
 Run: `npm run check` — Expected: `Contenido OK`.
 
-- [ ] **Step 4: Revisión del usuario y push**
+- [x] **Step 4: Revisión del usuario y push**
 
 El usuario revisa y ajusta el texto de las guías (conoce a su padre). Después:
 
@@ -2717,7 +2717,7 @@ Expected: CI verde; en la app instalada, tras sync, aparecen las 5 guías.
 **Interfaces:**
 - Consumes: manifest (Task 3), render de tarjetas (Task 6 — las tarjetas con `icono` muestran la imagen si la app la soporta; si aún no, el icono queda para una mejora futura del render y no rompe nada).
 
-- [ ] **Step 1: Confirmar la lista de medios con el usuario**
+- [x] **Step 1: Confirmar la lista de medios con el usuario**
 
 Lista por defecto (el usuario la ajusta a los gustos reales de su padre — en particular la prensa LOCAL de su provincia, que solo él conoce):
 - Local: (a rellenar por el usuario — 2 o 3 cabeceras de su zona)
@@ -2726,7 +2726,7 @@ Lista por defecto (el usuario la ajusta a los gustos reales de su padre — en p
 - Deportes: Marca, AS
 - Bolsa: Expansión, Cinco Días
 
-- [ ] **Step 2: Script de iconos**
+- [x] **Step 2: Script de iconos**
 
 `scripts/descargar-iconos.mjs`:
 
@@ -2749,7 +2749,7 @@ for (const t of tarjetas.filter(t => t.tipo === 'enlace' && t.icono)) {
 }
 ```
 
-- [ ] **Step 3: Manifest de prensa completo**
+- [x] **Step 3: Manifest de prensa completo**
 
 Actualizar la sección `prensa` con los 5 grupos y sus tarjetas, cada una con `icono: "<slug>.png"`. Ejecutar:
 
@@ -2760,7 +2760,7 @@ npm run check
 
 Expected: iconos descargados, `Contenido OK`.
 
-- [ ] **Step 4: Mostrar iconos en las tarjetas (app)**
+- [x] **Step 4: Mostrar iconos en las tarjetas (app)**
 
 En `entorno-app/src/ui/seccion.js`, dentro de `pintarTarjetas`, si la tarjeta tiene `icono`:
 
@@ -2792,7 +2792,7 @@ CSS en `base.css`: `.icono-tarjeta { width: 48px; height: 48px; margin-right: 16
 
 Run: `npm test` — Expected: todos pasan (los tests existentes de `renderSeccion` siguen pasando: `resolverImagen` es opcional cuando ninguna tarjeta tiene icono).
 
-- [ ] **Step 5: Commit y push de ambos repos**
+- [x] **Step 5: Commit y push de ambos repos**
 
 ```bash
 # entorno-contenido

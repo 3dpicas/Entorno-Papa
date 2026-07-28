@@ -6,14 +6,15 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 4 casi cerrado** (Tareas 17 y 18 hechas; Tarea 19 con los Steps 1 y 2 verificados)
-- **Siguiente paso:** **Step 3 de la Tarea 19, y lo tiene que hacer el autor en persona:** instalar en los dos PCs del padre (portátil y torre) con el checklist del plan. Hecho eso, se cierra el Bloque 4 (tag `bloque-4`) y empieza el Bloque 5 — contenido real. Nada más está bloqueado.
-- **Repos:** `entorno-app` @ `59d0ec1` / tags `bloque-3`, `v0.1.0`, `v0.1.1` · `entorno-contenido` @ `a6eead9` (contenido v3) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Fase:** 🔨 **Bloque 5 en curso** (Tareas 20 y 21 hechas; Bloque 4 pendiente solo del segundo PC)
+- **Siguiente paso:** Tarea 22 — sección Jugar definitiva con iconos, revisión completa del contenido y v1. Dos cosas siguen esperando al autor y **ninguna bloquea el trabajo restante**: instalar en el segundo PC del padre (Tarea 19 Step 3, cierra el Bloque 4) y hacer las 35 capturas de las guías (Tarea 20 Step 2).
+- **Repos:** `entorno-app` @ `c6284eb` / tags `bloque-3`, `v0.1.0`, `v0.1.1`, `v0.1.2` · `entorno-contenido` @ `b89f87e` (contenido v5) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
 - **Primer PC del padre ya instalado** (2026-07-28): v0.1.1 funcionando; el único fallo que encontró usándola fue el enlace del solitario, ya corregido en el contenido v3. Queda el segundo equipo.
-- **Releases publicadas:** `v0.1.0` y `v0.1.1` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar a los PCs del padre:** el `Entorno.de.Papa_0.1.1_x64-setup.exe` de la release v0.1.1.
+- **Entorno del padre (condiciona el contenido):** Gmail, Brave instalado y por defecto, móvil Android, prensa local de Burgos.
+- **Releases publicadas:** `v0.1.0`, `v0.1.1` y `v0.1.2` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar al segundo PC:** el `*-setup.exe` de la última release, en `https://github.com/3dpicas/entorno-app/releases`.
 - **Clave de firma:** privada en `%USERPROFILE%\.tauri\entorno-papa.key`, contraseña en el gestor del autor, ambas también como secretos de `3dpicas/entorno-app`. Si se pierden, los PCs del padre dejan de aceptar actualizaciones y hay que reinstalar a mano.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
-- **Última sesión:** 2026-07-28 — Bloque 4 casi entero: icono e instalador NSIS en español, auto-actualización firmada con releases en GitHub, y el ciclo completo visto funcionar (la app pasó sola de v0.1.0 a v0.1.1, y recogió sola un push de contenido a v2). **El binario ya no es `app.exe` sino `entorno-papa.exe`.** 43 tests JS + 9 tests Rust en verde.
+- **Última sesión:** 2026-07-28/29 — Bloque 4 casi entero (icono, instalador NSIS en español, auto-actualización firmada, ciclo completo visto funcionar: la app pasó sola de v0.1.0 a v0.1.1 y recogió sola un push de contenido) y Bloque 5 arrancado: 5 guías reales, kiosco de prensa con Burgos e iconos en las tarjetas. **El binario ya no es `app.exe` sino `entorno-papa.exe`.** 47 tests JS + 9 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -460,7 +461,54 @@ Cambio de contenido, no tarea del plan (`PROTOCOLO.md` § escalabilidad). Se ano
 
 ## BLOQUE 5 — Contenido real v1
 
-*(sin tareas ejecutadas aún)*
+### Tarea 20: guías de ofimática — HECHA salvo las capturas (2026-07-29)
+
+- **Commits:** `1decff1` (entorno-contenido, contenido v4)
+- **Datos que condicionaron el texto, confirmados por el autor:** el padre usa **Gmail**, **Brave** ya instalado y puesto como navegador predeterminado, y móvil **Android**. Sin esto las guías se habrían escrito a ciegas y no habrían servido: los botones, los iconos y los nombres de carpeta cambian con cada combinación.
+- **Verificado:**
+  - `npm run check` → `Contenido OK`.
+  - **Parseadas con el parser real de la app** (`src/lib/guia.js`, no una comprobación aparte): 5 guías, 36 pasos, **ninguno vacío y ninguno con el título mal formado**. 7+7+7+7+8 pasos.
+  - En la app en marcha: la sección Aprender pinta las 5 tarjetas nuevas, y abriendo «Fotos del móvil al PC» el visor da `h1 = Pasar las fotos del móvil al ordenador`, `Paso 1 de 8` y **0 imágenes rotas** — el degradado silencioso de las capturas que aún no existen funciona. Captura revisada.
+- **Desviaciones del plan:**
+  1. **Las guías llevan escritas las 35 referencias `![captura](img/…)` aunque los ficheros no existan.** El plan decía «se commitean sin imágenes»; dejarlas escritas convierte la guía en la lista exacta de capturas que hay que hacer, y el visor las quita en silencio mientras tanto. Comprobado que `check.mjs` no valida las imágenes del cuerpo de las guías (solo los iconos), así que el CI pasa.
+  2. La regla de «no arrastrar» del plan (solo para `carpetas-archivos`) se aplicó a todas: mover ficheros y copiar fotos van con botón derecho y menú. En Windows 11 eso obliga a describir **dibujos** (tijeras, portapapeles) en vez de palabras, porque el menú nuevo es de iconos.
+  3. `drive-basico` abre los archivos con botón derecho → **Vista previa** en vez de doble clic, por la misma regla.
+- **Decisiones nuevas:** el Paso 1 de `drive-basico` no es una acción sino una explicación de qué es Drive («un armario tuyo, pero guardado en internet»). Se salta la regla de «un paso = una acción» a propósito: sin saber qué es, los seis pasos siguientes no significan nada.
+- **Pendientes que deja:**
+  1. **Las 35 capturas** (Step 2). El autor las hará más adelante; las guías ya se leen sin ellas. Nombres exactos: `img/correo-enviar-01..07`, `correo-leer-01..07`, `drive-basico-02..07`, `carpetas-archivos-01..07`, `fotos-movil-pc-01..08`.
+  2. El texto **no lo ha revisado todavía el autor**, que es quien conoce a su padre. Se publicó con su permiso explícito porque corregir contenido es inmediato y no requiere reinstalar nada.
+
+### Tarea 21: kiosco de prensa completo con iconos — HECHA (2026-07-29)
+
+- **Commits:** `b89f87e` (entorno-contenido, contenido v5) · `e47a82b` + `f3dd33e` (entorno-app) · release `v0.1.2`
+- **Verificado:**
+  - **Las 11 URLs comprobadas una a una con `curl`: todas 200.** Burgos (Diario de Burgos, El Correo de Burgos, BURGOSconecta), Nacional (El País, El Mundo, ABC), Internacional (BBC Mundo, Euronews), Deportes (Marca, AS), Bolsa (Expansión).
+  - `node scripts/descargar-iconos.mjs` → 11 iconos descargados; revisados de uno en uno: son los logos reales, no el globo genérico de reserva (el de la BBC son sus tres cuadrados negros, y pesa solo 252 bytes, que era lo que hacía sospechar).
+  - TDD en la app: `npm test` con los tests escritos y sin implementación → 2 fallos, los dos que necesitaban la funcionalidad. Tras implementar → `Test Files 11 passed`, `Tests 47 passed`.
+  - **En la app en marcha:** los 5 grupos, las 11 tarjetas y **11 de 11 imágenes con `naturalWidth > 0`**, o sea cargadas de verdad. Captura revisada con los logos.
+  - **Esto cierra el pendiente nº 6 del Bloque 3:** el camino `contenido_ruta` → `convertFileSrc` → `assetProtocol` llevaba sin ejercitarse desde el Bloque 1 por la duda del prefijo `\\?\` de `canonicalize`. Funciona.
+- **Desviaciones del plan:**
+  1. **Grupo local = Burgos**, que el plan dejaba a rellenar. Elegidas las tres cabeceras de la provincia.
+  2. **Cinco Días queda fuera.** `cincodias.elpais.com` responde **403** a las comprobaciones automáticas y no se ha podido verificar; entrará cuando se abra en un navegador de verdad. Bolsa se queda con Expansión sola.
+  3. `renderSeccion` recibe `resolverImagen` como **opcional**: si una tarjeta trae icono pero nadie pasa el resolvedor, se pinta sin icono en vez de romper. Hay test para ese caso y para el de icono que no carga.
+- **Decisiones nuevas:**
+  - **Compactada la pantalla de sección** (`f3dd33e`): márgenes de los títulos de grupo 32/16 → 14/8, cabecera 32 → 16, padding vertical de `main` 32 → 20. Con cinco grupos, Prensa desbordaba 306 px y Deportes quedaba cortado; ahora desborda 154 y solo queda Bolsa por debajo. **No se tocaron el alto mínimo de tarjeta (120 px) ni el tamaño del título de grupo (32 px): son mínimos de la spec.**
+  - **Se acepta el scroll vertical**, decisión del autor. La spec solo prohíbe el horizontal.
+  - La semilla de `entorno-app` se regeneró al contenido v5 antes de publicar, para que una instalación nueva arranque ya con la prensa de Burgos y las cinco guías aunque no haya red.
+- **Aprendido, y es lo importante de esta tarea:** al ver el desborde empecé a recortar CSS hasta que cupiera **en el monitor de desarrollo**. El autor lo paró: la app puede acabar en varios ordenadores, así que cuadrar píxeles contra una pantalla concreta produce un diseño que se rompe en la siguiente. Enfoque correcto, y el que se aplicó: **probar a varios tamaños y validar invariantes**, no una medida. Resultados con la ventana redimensionada por Win32 y medida por CDP:
+
+  | Ventana | Columnas | Scroll horizontal | Texto recortado | Alto de tarjeta |
+  |---|---|---|---|---|
+  | 1024×768 | 2 | no | no | 120 px |
+  | 1366×768 | 2 | no | no | 120 px |
+  | 1600×900 | 3 | no | no | 120 px |
+  | 1920×1080 | 4 | no | no | 120 px |
+
+  La rejilla se adapta sola y ninguna de las invariantes se rompe; lo único que cambia es cuánto hay que bajar. Script de apoyo: `resoluciones.ps1` en el scratchpad de la sesión.
+- **Pendientes que deja:**
+  1. Con cinco grupos **no existe forma de que Prensa quepa sin scroll** respetando la spec: 5 × (título 42 + tarjeta 120) + cabecera 96 + padding 40 = **946 px mínimos**, aunque se quiten todos los márgenes. Si algún día molesta, la salida es fusionar grupos (Internacional dentro de Nacional ahorra 184 px), no seguir recortando CSS.
+  2. Cinco Días sin verificar (403).
+  3. Los iconos vienen del servicio de favicons de Google: si algún medio cambia de logo, hay que volver a ejecutar el script.
 
 ---
 
