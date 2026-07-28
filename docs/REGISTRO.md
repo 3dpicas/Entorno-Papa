@@ -6,11 +6,11 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** ✅ **Bloque 3 cerrado** (Tareas 12–16 hechas y verificadas, sync real incluido)
-- **Siguiente paso:** Bloque 4, Tarea 17 — icono e instalador NSIS en español (`recursos/icono.svg`, `scripts/generar-icono.mjs`, `npx tauri icon`, bundle NSIS con `installMode: currentUser`).
-- **Repos:** `entorno-app` @ `ec24738` / tag `bloque-3` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Fase:** 🔨 **Bloque 4 en curso** (Tarea 17 hecha; Bloque 3 cerrado)
+- **Siguiente paso:** Bloque 4, Tarea 18 — auto-actualización: `npm run tauri add updater` + `process`, clave de firma con `npx tauri signer generate`, `pubkey`/`endpoints` en `tauri.conf.json`, `check()` al arrancar y workflow `release.yml` con los secretos `TAURI_SIGNING_PRIVATE_KEY*`.
+- **Repos:** `entorno-app` @ `622568b` / tag `bloque-3` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
-- **Última sesión:** 2026-07-27/28 — Bloques 1, 2 y 3 completos: panel navegable, visor de guías, sincronización de contenido desde GitHub, contenido semilla, indicador de versión, log a fichero y pantalla de mantenimiento. Los tres repos publicados y el sync real verificado de punta a punta. 39 tests JS + 9 tests Rust en verde.
+- **Última sesión:** 2026-07-28 — Tarea 17: icono propio, instalador NSIS en español instalado y probado, y de paso saldada la deuda de metadatos de `Cargo.toml`, rotación del log y regeneración automática de la semilla. **El binario ya no es `app.exe` sino `entorno-papa.exe`.** 39 tests JS + 9 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -372,7 +372,33 @@ Hito, no tarea del plan: es lo que desbloquea todo el Bloque 3 y lo que más rie
 
 ## BLOQUE 4 — Distribución e instalación
 
-*(sin tareas ejecutadas aún)*
+### Tarea 17: icono e instalador NSIS en español — HECHA (2026-07-28)
+
+- **Commits:** `622568b` (entorno-app)
+- **Verificado:**
+  - `node scripts/generar-icono.mjs` → `icono.png generado`; `npx tauri icon recursos/icono.png` repobló `src-tauri/icons/`. Revisado `128x128.png`: casa blanca sobre cuadrado verde redondeado, que es el diseño del SVG.
+  - `npm run tauri build` → un solo bundle, `Entorno de Papa_0.1.0_x64-setup.exe` (ya no sale el MSI). El `beforeBuildCommand` ejecutó la semilla solo: `Semilla actualizada desde entorno-contenido` antes del `vite build`.
+  - **Instalador en español, comprobado leyendo la propia ventana** (no de oídas): lanzado el setup y volcados sus controles por Win32 → título `Instalación de Entorno de Papa`, botones `&Siguiente >` y `Cancelar`, texto `Bienvenido al Asistente de Instalación de Entorno de Papa` y el párrafo completo en español. No apareció selector de idioma. Pie con `© 2026 marquib3l`, que confirma el `copyright` del bundle.
+  - **Instalación real** con `/S` (exit 0). Creó `C:\Users\marqu\Desktop\Entorno de Papa.lnk` y `…\Start Menu\Programs\Entorno de Papa.lnk`. El acceso directo apunta a `B:\03_Recursos\Software\Entorno de Papa\entorno-papa.exe` — NSIS reutilizó la ruta de la instalación anterior del autor, y no quedó ningún `app.exe` huérfano del nombre viejo.
+  - **App instalada abierta:** título `Entorno de Papá`, `showCmd = 3` (maximizada), 1938×1158 físicos. Captura revisada: saludo «Buenas tardes, Papá», reloj `19:39`, las 3 tarjetas con sus colores, icono de casa verde en la barra de título y, abajo a la derecha, `Contenido v1 · 28/07/2026` — o sea que el sync desde GitHub también funcionó en esta build.
+  - Icono del ejecutable extraído con `ExtractAssociatedIcon` y revisado: la casa verde.
+  - Tests sin regresiones: `npm test` → 39, `cargo test` → 9.
+- **Desviaciones del plan:**
+  1. **`npx tauri icon` genera además `icons/android/` e `icons/ios/`** (unos 40 ficheros). El proyecto es solo Windows, así que se borraron antes de commitear.
+  2. Del array `bundle.icon` se quitó `icons/icon.icns` (macOS) por lo mismo. `icons/64x64.png` sí se conserva porque lo genera la herramienta y no estorba.
+  3. Se añadieron al bundle `publisher`, `copyright`, `shortDescription` y `longDescription`, que el plan no pedía: son los campos que acaban a la vista en el instalador y en las propiedades del `.exe`.
+  4. **Se saldó de paso deuda acumulada de bloques anteriores**, porque toca exactamente los mismos ficheros de build:
+     - `Cargo.toml`: `name = "entorno-papa"`, `description` y `authors` reales, `repository` apuntando a `3dpicas/entorno-app`. **Efecto secundario a recordar: el binario ya no es `target/release/app.exe` sino `entorno-papa.exe`.** El `[lib] name = "app_lib"` no se tocó, así que `main.rs` sigue igual.
+     - Log acotado: `.max_file_size(1_000_000)` + `RotationStrategy::KeepSome(2)`. Máximo ~3 MB en total en vez de crecer sin límite.
+     - Semilla automática: `beforeBuildCommand` pasa a `npm run compilar` (= `npm run semilla && npm run build`), y `actualizar-semilla.mjs` ya no aborta si falta el repo hermano: si hay semilla commiteada, avisa y sigue. Esto es lo que hace que el `|| true` del workflow de la Tarea 18 sobre.
+- **Decisiones nuevas:**
+  - `recursos/icono.png` va al `.gitignore`: es un derivado de `icono.svg` que regenera `npm`. La fuente de verdad es el SVG.
+  - `bundle.targets` pasa de `"all"` a `["nsis"]`. El MSI no aporta nada aquí y el updater de la Tarea 18 trabaja con los artefactos NSIS.
+- **Pendientes que deja:**
+  1. El instalador **no está firmado con certificado de código**, así que Windows SmartScreen avisará al ejecutarlo en una máquina nueva. La firma del updater (Tarea 18) es otra cosa distinta: sirve para que la app confíe en la actualización, no para que Windows confíe en el instalador.
+  2. Queda por comprobar la instalación **en una máquina limpia**: aquí NSIS reutilizó la ruta de una instalación previa (`B:\03_Recursos\Software\…`), no la de por defecto.
+  3. La rotación del log está configurada pero no ejercitada: haría falta un log de más de 1 MB para verla rotar. Además `leer_log_reciente` solo lee `entorno.log`, así que tras rotar no verá lo que quedó en los ficheros con fecha.
+  4. Sigue ahí el `Entorno de Papa.log` huérfano de 0 bytes de la Tarea 16.
 
 ---
 

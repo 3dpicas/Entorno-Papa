@@ -2429,7 +2429,7 @@ git add -A && git commit -m "feat: log a archivo y pantalla admin oculta"
 **Interfaces:**
 - Produces: iconos en `src-tauri/icons/` generados con `npx tauri icon`; instalador NSIS en español con acceso directo de escritorio.
 
-- [ ] **Step 1: Icono fuente**
+- [x] **Step 1: Icono fuente**
 
 `recursos/icono.svg` (casa blanca sobre fondo verde, simple y reconocible):
 
@@ -2463,7 +2463,7 @@ npx tauri icon recursos/icono.png
 
 Expected: `src-tauri/icons/` poblado (icon.ico, varios png).
 
-- [ ] **Step 2: Configurar bundle NSIS**
+- [x] **Step 2: Configurar bundle NSIS**
 
 En `tauri.conf.json`, en `bundle`:
 
@@ -2483,7 +2483,7 @@ En `tauri.conf.json`, en `bundle`:
 }
 ```
 
-- [ ] **Step 3: Verificar instalador**
+- [x] **Step 3: Verificar instalador**
 
 ```bash
 npm run semilla
@@ -2492,7 +2492,7 @@ npm run tauri build
 
 Expected: `src-tauri/target/release/bundle/nsis/Entorno de Papa_0.1.0_x64-setup.exe`. Instalarlo: instalador en español, crea acceso directo en escritorio y menú inicio, la app abre maximizada con icono de casa verde.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A && git commit -m "feat: icono e instalador NSIS en español"
