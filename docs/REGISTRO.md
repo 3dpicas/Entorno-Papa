@@ -6,12 +6,13 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 4 en curso** (Tareas 17 y 18 hechas; Bloque 3 cerrado)
-- **Siguiente paso:** Bloque 4, Tarea 19 — prueba del ciclo completo: instalar la v0.1.0 de la release, publicar una v0.1.1 y ver la app actualizarse sola; luego un push al repo de contenido con `version: 2` y comprobar que la tarjeta nueva aparece sin reinstalar. El Step 3 (instalar en los dos PCs del padre) es trabajo manual del autor.
-- **Repos:** `entorno-app` @ `c3e841f` / tags `bloque-3` y `v0.1.0` · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
-- **Release publicada:** `v0.1.0` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. La clave privada de firma vive en `%USERPROFILE%\.tauri\entorno-papa.key` y su contraseña en el gestor del autor; ambas están también como secretos del repo.
+- **Fase:** 🔨 **Bloque 4 casi cerrado** (Tareas 17 y 18 hechas; Tarea 19 con los Steps 1 y 2 verificados)
+- **Siguiente paso:** **Step 3 de la Tarea 19, y lo tiene que hacer el autor en persona:** instalar en los dos PCs del padre (portátil y torre) con el checklist del plan. Hecho eso, se cierra el Bloque 4 (tag `bloque-4`) y empieza el Bloque 5 — contenido real. Nada más está bloqueado.
+- **Repos:** `entorno-app` @ `59d0ec1` / tags `bloque-3`, `v0.1.0`, `v0.1.1` · `entorno-contenido` @ `7595bed` / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Releases publicadas:** `v0.1.0` y `v0.1.1` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar a los PCs del padre:** el `Entorno.de.Papa_0.1.1_x64-setup.exe` de la release v0.1.1.
+- **Clave de firma:** privada en `%USERPROFILE%\.tauri\entorno-papa.key`, contraseña en el gestor del autor, ambas también como secretos de `3dpicas/entorno-app`. Si se pierden, los PCs del padre dejan de aceptar actualizaciones y hay que reinstalar a mano.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
-- **Última sesión:** 2026-07-28 — Tarea 17: icono propio, instalador NSIS en español instalado y probado, y de paso saldada la deuda de metadatos de `Cargo.toml`, rotación del log y regeneración automática de la semilla. **El binario ya no es `app.exe` sino `entorno-papa.exe`.** 39 tests JS + 9 tests Rust en verde.
+- **Última sesión:** 2026-07-28 — Bloque 4 casi entero: icono e instalador NSIS en español, auto-actualización firmada con releases en GitHub, y el ciclo completo visto funcionar (la app pasó sola de v0.1.0 a v0.1.1, y recogió sola un push de contenido a v2). **El binario ya no es `app.exe` sino `entorno-papa.exe`.** 43 tests JS + 9 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -424,6 +425,26 @@ Hito, no tarea del plan: es lo que desbloquea todo el Bloque 3 y lo que más rie
   2. La actualización automática **está publicada pero todavía no vista funcionar**: eso es la Tarea 19, que necesita una v0.1.1 que descargar.
   3. El instalador no lleva firma de código (certificado): SmartScreen avisará en un equipo nuevo. La firma del updater es otra cosa, sirve para que la app confíe en la actualización.
   4. Los `actions/checkout@v4` y `setup-node@v4` avisan de que Node 20 está obsoleto en los runners. Es aviso, no error.
+
+### Tarea 19: instalación y ciclo completo — STEPS 1 Y 2 HECHOS (2026-07-28); STEP 3 PENDIENTE DEL AUTOR
+
+- **Commits:** `59d0ec1` (entorno-app, versión 0.1.1) · `7595bed` (entorno-contenido, ABC + `version: 2`) · tag `v0.1.1`
+- **Verificado — Step 1, la app se actualiza sola:**
+  - Punto de partida honesto: se **descargó e instaló el `setup.exe` de la release v0.1.0** (la instalación previa era la build local de la Tarea 17, que no lleva updater). Comprobado en disco: `FileVersion = 0.1.0`, fecha `20:17:10`, la de la compilación en CI.
+  - Publicada la v0.1.1 (subida de versión en `tauri.conf.json` y `Cargo.toml`, tag `v0.1.1`); workflow en verde y release con instalador, `.sig` y `latest.json` apuntando ya a `0.1.1`.
+  - Abierta la app instalada (v0.1.0) a las 20:42:27 con pid 40452. **75 segundos después, sin tocar nada:** el ejecutable en disco era `FileVersion = 0.1.1` (fecha `20:34:04`, la de la build de CI), el proceso 40452 había desaparecido y corría uno nuevo, pid 1908. Es decir: descargó, instaló y se relanzó sola.
+  - Confirmado desde dentro con Ctrl+Shift+A: `App: v0.1.1`.
+- **Verificado — Step 2, el contenido llega sin reinstalar:**
+  - Añadida la tarjeta ABC a Prensa/Nacional y subido `version` a 2 en `entorno-contenido`; `npm run check` → `Contenido OK`; push a `main`.
+  - Con la app **ya abierta y sin reiniciarla**: `contenido_meta.json` pasó de `sha d8d716d / version 1` a `sha 7595bed / version 2` — y `7595bed` es exactamente el commit que se acababa de empujar. El indicador de la esquina cambió a `Contenido v2 · 28/07/2026` (captura revisada).
+  - La tarjeta nueva, vista en pantalla: navegando a Prensa por CDP, `tarjetas = ["El País","El Mundo","ABC","Marca"]` y captura del grupo Nacional con las tres tarjetas.
+  - **Esto cierra el pendiente nº 9 del Bloque 3** («sin probar: que un push nuevo al repo de contenido lo recoja la app sola»). Ya no se falsea el sha local: se publicó un commit de verdad y la app lo recogió.
+- **Desviaciones del plan:** el plan daba por hecho que la máquina ya tenía instalada la v0.1.0 «buena»; había que instalar antes la de la release, porque la build local de la Tarea 17 es anterior al updater y nunca habría comprobado actualizaciones. Los dos Steps se solaparon en el tiempo (el contenido se probó mientras compilaba la v0.1.1), pero las evidencias son independientes: el sha del contenido por un lado, la versión del ejecutable por otro.
+- **Decisiones nuevas:** Ninguna. ABC es una tarjeta de prueba con URL real; el contenido de verdad se cura en el Bloque 5.
+- **Pendientes que deja:**
+  1. **Step 3 sin hacer: instalar en los dos PCs del padre.** Es trabajo presencial del autor. Checklist en el plan: acceso directo con icono verde, contenido visible al abrir, Ctrl+Shift+A correcto, un periódico abriendo en el navegador que use él, y la prueba sin WiFi.
+  2. **La actualización de la app no deja rastro en `entorno.log`.** `actualizarApp` usa `console.info`/`console.error`, que se quedan en la consola del WebView; el log a fichero solo recoge lo que escribe Rust. Lo mismo le pasa a `sincronizar()`. Si una actualización falla en el PC del padre, el log —que es la única ventana que hay a esa máquina— no dirá nada. No es regresión de esta tarea (viene de antes), pero contradice el espíritu de la spec §8 y conviene resolverlo antes de dar la v1 por buena.
+  3. El instalador sigue sin firma de código: en los equipos del padre saldrá el aviso de SmartScreen la primera vez.
 
 ---
 

@@ -2627,17 +2627,17 @@ Expected: Action `release` en verde; release `v0.1.0` en GitHub con `*-setup.exe
 **Interfaces:**
 - Consumes: release v0.1.0 (Task 18), sync (Bloque 3).
 
-- [ ] **Step 1: Prueba del ciclo de actualización de app**
+- [x] **Step 1: Prueba del ciclo de actualización de app**
 
 En la máquina del autor, con v0.1.0 instalada: subir un cambio trivial (p. ej. versión 0.1.1 en `tauri.conf.json` y `Cargo.toml`), `npm run semilla`, commit, `git tag v0.1.1 && git push --tags`. Abrir la app instalada.
 Expected: la app se relanza sola en <1 min ya en v0.1.1 (verificar con Ctrl+Shift+A).
 
-- [ ] **Step 2: Prueba del ciclo de contenido**
+- [x] **Step 2: Prueba del ciclo de contenido**
 
 Editar `entorno-contenido/manifest.json` (añadir un periódico), subir `version` a 2, `npm run check`, commit y push. En la app instalada: forzar sync desde el panel admin (o esperar al arranque).
 Expected: la tarjeta nueva aparece sin reinstalar nada.
 
-- [ ] **Step 3: Instalar en los dos PCs del padre**
+- [ ] **Step 3: Instalar en los dos PCs del padre** *(trabajo manual del autor: requiere estar delante de los equipos)*
 
 Checklist por equipo (portátil y torre):
 - Descargar el `*-setup.exe` de la última release (o llevarlo en USB) e instalar.
