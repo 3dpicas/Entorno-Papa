@@ -2139,7 +2139,7 @@ git add -A && git commit -m "feat: contenido semilla empaquetado para primer arr
 - Consumes: commands `sync_now`/`estado_sync` (Task 13), `cargarManifest` (Task 8).
 - Produces: `renderIndicador(estado: EstadoSync): HTMLElement` — pie discreto "Contenido v7 · 26/07/2026". Sync al arrancar y cada 6 h; si `estado === 'actualizado'`, recarga manifest y re-renderiza la ruta actual.
 
-- [ ] **Step 1: Test del indicador que falla**
+- [x] **Step 1: Test del indicador que falla**
 
 `tests/indicador.test.js`:
 
@@ -2163,7 +2163,7 @@ describe('renderIndicador', () => {
 
 Run: `npm test` — Expected: FAIL.
 
-- [ ] **Step 2: Implementación**
+- [x] **Step 2: Implementación**
 
 `src/ui/indicador.js`:
 
@@ -2223,12 +2223,12 @@ sincronizar();
 setInterval(sincronizar, SEIS_HORAS);
 ```
 
-- [ ] **Step 3: Verificar**
+- [x] **Step 3: Verificar**
 
 Run: `npm test` — Expected: todos pasan.
 Run: `npm run tauri dev` — Expected: indicador ausente o discreto (en dev `sync_now` devuelve `dev`); consola sin errores.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A && git commit -m "feat: bucle de sync con refresco silencioso e indicador"

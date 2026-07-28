@@ -6,9 +6,9 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 3 en curso** — Tareas 12, 13 y 14 hechas; toca la Tarea 15.
-- **Siguiente paso:** Bloque 3, Tarea 15 — bucle de sync en el frontend e indicador discreto (`src/ui/indicador.js` + `tests/indicador.test.js`, cambios en `main.js`), TDD.
-- **Repos:** `entorno-app` @ `f3b3f5f` (por delante del tag `bloque-2`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
+- **Fase:** 🔨 **Bloque 3 en curso** — Tareas 12, 13, 14 y 15 hechas; toca la Tarea 16 (la última del bloque).
+- **Siguiente paso:** Bloque 3, Tarea 16 — log a archivo y pantalla admin oculta (`src/ui/admin.js` + `tests/admin.test.js`, comando `leer_log_reciente`, atajo Ctrl+Shift+A).
+- **Repos:** `entorno-app` @ `6ac7107` (por delante del tag `bloque-2`) · `entorno-contenido` @ `d8d716d` / tag `bloque-0` · raíz: su HEAD sigue avanzando con los commits de documentación.
 - **GitHub (pendiente del autor):** usuario `3dpicas`. Existe `3dpicas/Entorno-Papa` (público, rama `main`) que hará de repo de documentación; faltan por crear `entorno-contenido` (público) y `entorno-app`, vacíos, para que el primer push no choque. Hasta que existan, el sync y el updater no se pueden probar de verdad.
 - **Última sesión:** 2026-07-27/28 — Bloques 1 y 2 completos (manifest, router, Inicio, Sección, enlaces al navegador, parser de guías y visor paso a paso) y Bloque 3 a medias: funciones puras de sync y descarga desde GitHub con `sync_now`. 34 tests JS + 8 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
@@ -287,6 +287,22 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
   4. Otra trampa: si hay un `app.exe` abierto, `tauri build` falla con `error: failed to remove file ...\target\release\app.exe / Acceso denegado. (os error 5)`. Cerrar la app antes de compilar.
   5. Al lanzar el ejecutable desde una shell no interactiva, la ventana abre **minimizada** (`showCmd = 2`) pese al `maximized: true`. Es cosa del `STARTUPINFO` heredado, no de la configuración; desde un acceso directo normal abre maximizada. Para capturarla hay que llamar antes a `ShowWindow(h, 3)`.
   6. El proceso lanzado en segundo plano muere cuando termina la shell que lo lanzó: para inspeccionarlo hay que arrancarlo y capturarlo en la misma llamada.
+
+### Tarea 15: bucle de sync en el frontend + indicador discreto — HECHA (2026-07-28)
+
+- **Commits:** `6ac7107` (entorno-app)
+- **Verificado:**
+  - TDD: `npm test` sin implementación → `Failed to resolve import "../src/ui/indicador.js"`. Tras implementar, un test seguía en rojo (ver desviaciones); arreglada la implementación → `Test Files 9 passed (9)`, `Tests 36 passed (36)`.
+  - Con la app en marcha (dev, por CDP): el indicador **existe en el DOM y su texto está vacío**, que es justo lo que toca en desarrollo. La cadena es `sync_now` → `{"estado":"dev",...,"version":null}` → como no trae versión, se consulta `estado_sync` → `{"estado":"sin_datos","version":0,...}` → `renderIndicador` no pinta nada porque `version` es 0. Las 3 secciones siguen renderizando y la navegación no se altera.
+  - Ambos comandos invocados desde la página responden sin lanzar: son exactamente los dos que hace `sincronizar()`.
+- **Desviaciones del plan:**
+  - **La implementación del plan no pasaba su propio test.** `new Date(fecha).toLocaleDateString('es-ES')` devuelve `26/7/2026`, y el test pide `26/07/2026`. Se arregló la implementación (no el test) pasando `{ day: '2-digit', month: '2-digit', year: 'numeric' }`.
+- **Decisiones nuevas:** Ninguna.
+- **Pendientes que deja:**
+  1. **No se instrumentó la captura de errores de consola.** El criterio del plan («consola sin errores») se comprobó de forma indirecta: la app renderiza, y los dos `invoke` que hace el bucle responden bien. Para capturar `console.error` de verdad haría falta ampliar el cliente CDP con `Page.addScriptToEvaluateOnNewDocument`.
+  2. El indicador solo se repinta si ya había uno (`previo?.replaceWith(...)`). Como se añade siempre al arrancar, hoy funciona; si algún día se monta condicionalmente, el primer refresco se perdería.
+  3. **El refresco tras «actualizado» no se ha probado nunca**, porque en dev nunca llega ese estado. `manifest = await cargarManifest()` + `dispatchEvent(new HashChangeEvent('hashchange'))` está escrito pero no ejercitado; si el usuario estuviera dentro de una guía en ese momento, el re-render la reiniciaría en el paso 1.
+  4. El `setInterval` de 6 h no se cancela nunca (no hace falta: vive lo que vive la ventana).
 
 ---
 
