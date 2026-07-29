@@ -52,7 +52,9 @@ El plugin Rust ya configurado seguirá escribiendo todos los registros en `entor
 1. Antes de invocar `sync_now`: `[sync] inicio`.
 2. Si no hay contenido nuevo: `[sync] sin cambios`.
 3. Si hay actualización: `[sync] actualizado · versión 6 · SHA 0872dc0` (valores reales; SHA limitado a sus primeros 7 caracteres).
-4. Si falla cualquier paso: `[sync] error · conexión rechazada` (detalle real normalizado).
+4. Si `sync_now` devuelve estado de error: `[sync] error · conexión rechazada` (detalle real normalizado).
+5. Si la invocación falla antes de devolver estado: mismo formato de error.
+6. En una build de desarrollo, donde el sync remoto está desactivado: `[sync] omitido en desarrollo`.
 
 ### Actualización de la app
 
@@ -88,7 +90,8 @@ Los mensajes no incluirán contraseñas, claves de firma, contenido de guías ni
 - Updater registra error sin lanzar.
 - Sync registra inicio y resultado sin cambios.
 - Sync registra actualización con versión y SHA corto.
-- Sync registra error y mantiene degradación silenciosa.
+- Sync registra tanto el estado `error` devuelto por Rust como un rechazo de la invocación.
+- Sync registra `dev` sin describirlo erróneamente como “sin cambios”.
 
 ### Regresión
 
