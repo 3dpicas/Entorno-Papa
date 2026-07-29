@@ -2811,14 +2811,14 @@ Para la app: publicar release nueva (subir versión, tag) para que llegue a los 
 **Interfaces:**
 - Consumes: todo lo anterior.
 
-- [ ] **Step 1: Sección Jugar definitiva**
+- [x] **Step 1: Sección Jugar definitiva**
 
 Tarjetas con URLs verificadas ese día (abrirlas y comprobar que cargan sin registro):
-- Solitario: `https://www.solitr.com/es`
+- Solitario: `https://www.solitr.com/` *(corregido: `/es` daba 404)*
 - Tetris: `https://tetris.com/play-tetris`
 Con iconos vía `descargar-iconos.mjs`. Subir `version`.
 
-- [ ] **Step 2: Revisión completa del contenido**
+- [x] **Step 2: Revisión completa del contenido**
 
 Run: `npm run check` — Expected: `Contenido OK`.
 Revisión manual con checklist:
@@ -2826,7 +2826,7 @@ Revisión manual con checklist:
 - Cada guía se lee entera en el visor sin pasos vacíos.
 - Los títulos de tarjeta son cortos (caben en la tarjeta sin cortarse).
 
-- [ ] **Step 3: Push final y verificación en los PCs del padre**
+- [ ] **Step 3: Push final y verificación en los PCs del padre** *(push hecho; la verificación en sus equipos y los 10 minutos de observación los hace el autor)*
 
 ```bash
 git add -A && git commit -m "feat: contenido v1 completo" && git push

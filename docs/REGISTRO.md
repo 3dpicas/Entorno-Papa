@@ -6,15 +6,19 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 5 en curso** (Tareas 20 y 21 hechas; Bloque 4 pendiente solo del segundo PC)
-- **Siguiente paso:** Tarea 22 — sección Jugar definitiva con iconos, revisión completa del contenido y v1. Dos cosas siguen esperando al autor y **ninguna bloquea el trabajo restante**: instalar en el segundo PC del padre (Tarea 19 Step 3, cierra el Bloque 4) y hacer las 35 capturas de las guías (Tarea 20 Step 2).
-- **Repos:** `entorno-app` @ `c6284eb` / tags `bloque-3`, `v0.1.0`, `v0.1.1`, `v0.1.2` · `entorno-contenido` @ `b89f87e` (contenido v5) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Fase:** 🔨 **Bloques 4 y 5 completos salvo lo presencial.** Las 22 tareas del plan están ejecutadas; lo que queda no es código.
+- **Siguiente paso: todo lo pendiente es del autor y necesita estar delante de los equipos.** Por orden de importancia:
+  1. Instalar en el segundo PC del padre (Tarea 19 Step 3) → cierra el Bloque 4, tag `bloque-4`.
+  2. **Ver al padre usarlo diez minutos sin ayuda** (Tarea 22 Step 3): es la prueba de aceptación real de la v1, y lo único que puede decir si esto sirve de algo.
+  3. Las 35 capturas de las guías (Tarea 20 Step 2) y una lectura del texto de las guías.
+  4. Abrir las 13 URLs en un navegador de verdad: `curl` confirma que responden, no que la portada sea la correcta ni que no pidan registro.
+- **Repos:** `entorno-app` @ `c6284eb` / tags `bloque-3`, `v0.1.0`, `v0.1.1`, `v0.1.2` · `entorno-contenido` @ `0872dc0` (contenido v6) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
 - **Primer PC del padre ya instalado** (2026-07-28): v0.1.1 funcionando; el único fallo que encontró usándola fue el enlace del solitario, ya corregido en el contenido v3. Queda el segundo equipo.
 - **Entorno del padre (condiciona el contenido):** Gmail, Brave instalado y por defecto, móvil Android, prensa local de Burgos.
 - **Releases publicadas:** `v0.1.0`, `v0.1.1` y `v0.1.2` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar al segundo PC:** el `*-setup.exe` de la última release, en `https://github.com/3dpicas/entorno-app/releases`.
 - **Clave de firma:** privada en `%USERPROFILE%\.tauri\entorno-papa.key`, contraseña en el gestor del autor, ambas también como secretos de `3dpicas/entorno-app`. Si se pierden, los PCs del padre dejan de aceptar actualizaciones y hay que reinstalar a mano.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
-- **Última sesión:** 2026-07-28/29 — Bloque 4 casi entero (icono, instalador NSIS en español, auto-actualización firmada, ciclo completo visto funcionar: la app pasó sola de v0.1.0 a v0.1.1 y recogió sola un push de contenido) y Bloque 5 arrancado: 5 guías reales, kiosco de prensa con Burgos e iconos en las tarjetas. **El binario ya no es `app.exe` sino `entorno-papa.exe`.** 47 tests JS + 9 tests Rust en verde.
+- **Última sesión:** 2026-07-28/29 — Bloques 4 y 5 enteros salvo lo presencial: icono e instalador NSIS en español, auto-actualización firmada (vista pasar sola de v0.1.0 a v0.1.1 y de v0.1.1 a v0.1.2), 5 guías reales, kiosco de prensa con Burgos, iconos en las tarjetas y sección Jugar. **El binario ya no es `app.exe` sino `entorno-papa.exe`.** 47 tests JS + 9 tests Rust en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
 
@@ -509,6 +513,24 @@ Cambio de contenido, no tarea del plan (`PROTOCOLO.md` § escalabilidad). Se ano
   1. Con cinco grupos **no existe forma de que Prensa quepa sin scroll** respetando la spec: 5 × (título 42 + tarjeta 120) + cabecera 96 + padding 40 = **946 px mínimos**, aunque se quiten todos los márgenes. Si algún día molesta, la salida es fusionar grupos (Internacional dentro de Nacional ahorra 184 px), no seguir recortando CSS.
   2. Cinco Días sin verificar (403).
   3. Los iconos vienen del servicio de favicons de Google: si algún medio cambia de logo, hay que volver a ejecutar el script.
+
+### Tarea 22: juegos, revisión final y v1 — HECHA salvo la verificación en los PCs (2026-07-29)
+
+- **Commits:** `0872dc0` (entorno-contenido, contenido v6)
+- **Verificado:**
+  - `npm run check` → `Contenido OK`. `npm test` → 47. `cargo test` → 9.
+  - **En la app instalada de producción, que es el camino real:** tras el push, la app sincronizó sola a `sha 0872dc0` / `version 6` —el commit que se acababa de publicar—, y pintó **12 tarjetas de prensa con 12 iconos cargados** y Jugar con sus 2, indicador `Contenido v6 · 29/07/2026`. Ningún título recortado en ninguna sección.
+  - **Una guía recorrida entera** en el visor (`carpetas-archivos`): los 7 pasos con contenido real (entre 82 y 225 caracteres cada uno), indicador correcto en todos, y el botón final pasa a `✔ Terminar`.
+- **Desviaciones del plan:**
+  1. **Cinco Días vuelve a Bolsa.** Se había descartado en la Tarea 21 por un 403; reintentando resulta que responde 200. El 403 es antibot, no una URL rota: `elpais.com` alterna 200/403/200 desde la misma máquina en el mismo minuto. **La lección: una sola comprobación con `curl` produce falsos negativos en medios con protección antibot; hay que reintentar antes de descartar nada.**
+  2. **El solitario lleva icono dibujado a mano.** `solitr.com` no publica favicon: el servicio de Google da 404, `/favicon.ico` responde 200 pero con **0 bytes**, y el HTML no trae ningún `<link rel=icon>`. Se dibujó uno (dos cartas y un corazón sobre verde) y se dejó el SVG fuente junto al PNG. `descargar-iconos.mjs` avisa «sin favicon» en cada ejecución pero **no lo sobrescribe**, que es el comportamiento correcto.
+  3. La URL del solitario del plan (`solitr.com/es`) estaba mal desde el Bloque 0; corregida en el plan y en el contenido.
+- **Decisiones nuevas:** Ninguna.
+- **Trampa importante que costó un rato, y que volverá a pasar:** con el updater ya activo, **arrancar un binario de desarrollo compilado con una versión anterior dispara una actualización de verdad**. El `target/debug/entorno-papa.exe` se había compilado siendo la v0.1.1; al lanzarlo vio la release v0.1.2, se actualizó, y el proceso que quedó vivo fue **la app instalada**, no la de desarrollo. Durante un rato estuve midiendo producción creyendo medir dev, y las cifras no cuadraban (11 tarjetas en vez de 12) porque producción lee de appdata. Señales para reconocerlo: el proceso lanzado muere al instante, `Get-Process | Select Path` apunta a la ruta de instalación, y el target de CDP es `http://tauri.localhost/` en vez de `http://localhost:5173`. **Solución: recompilar el binario de dev tras cada subida de versión.** De rebote, es una confirmación más de que el updater funciona.
+- **Pendientes que deja:**
+  1. **Step 3 a medias:** el push está hecho y verificado en la máquina del autor con el binario de producción, pero falta abrirla en los PCs del padre y, sobre todo, **verle usarlo diez minutos sin ayuda**, que es la prueba de aceptación real de la v1.
+  2. Las URLs se han comprobado con `curl`, no abriéndolas en un navegador: eso confirma que responden, no que la portada sea la correcta ni que no pidan registro o cookies. El plan pedía abrirlas.
+  3. Siguen pendientes las 35 capturas de las guías.
 
 ---
 
