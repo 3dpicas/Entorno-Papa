@@ -44,7 +44,7 @@ Se añadirá un comando backend sin parámetros públicos, por ejemplo `abrir_bu
 El comando buscará `brave.exe` en estas instalaciones habituales:
 
 1. `%PROGRAMFILES%\BraveSoftware\Brave-Browser\Application\brave.exe`
-2. `%PROGRAMFILES(X86)%\BraveSoftware\Brave-Browser\Application\brave.exe`
+2. `%ProgramFiles(x86)%\BraveSoftware\Brave-Browser\Application\brave.exe`
 3. `%LOCALAPPDATA%\BraveSoftware\Brave-Browser\Application\brave.exe`
 
 Al encontrarlo, lo ejecutará con `https://search.brave.com/` como único argumento y devolverá estado `abierto`. Si Brave no aparece o no puede arrancar, devolverá estado `no_disponible`; el frontend registrará el diagnóstico y abrirá la misma URL con `openUrl`, mecanismo existente para el navegador predeterminado. En los dos equipos de destino, Brave deberá permanecer instalado y configurado antes de la aceptación.
