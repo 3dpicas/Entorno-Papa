@@ -38,7 +38,7 @@
 - Produces: `crearRegistro({ info?, error? } = {}): { info(message): Promise<void>, error(context, cause): Promise<void> }`.
 - Garantía: ambos métodos públicos siempre resuelven `undefined`, incluso si el plugin rechaza.
 
-- [ ] **Step 1: Escribir test rojo del adaptador**
+- [x] **Step 1: Escribir test rojo del adaptador**
 
 Crear `tests/registro.test.js`:
 
@@ -103,7 +103,7 @@ describe('crearRegistro', () => {
 });
 ```
 
-- [ ] **Step 2: Ejecutar test y confirmar fallo**
+- [x] **Step 2: Ejecutar test y confirmar fallo**
 
 Run:
 
@@ -113,7 +113,7 @@ npx vitest run tests/registro.test.js
 
 Expected: FAIL porque `../src/lib/registro.js` no existe.
 
-- [ ] **Step 3: Instalar bindings JavaScript oficiales**
+- [x] **Step 3: Instalar bindings JavaScript oficiales**
 
 Run:
 
@@ -123,7 +123,7 @@ npm install @tauri-apps/plugin-log@^2
 
 Expected: `@tauri-apps/plugin-log` aparece en `dependencies`; `package-lock.json` queda actualizado.
 
-- [ ] **Step 4: Autorizar comando del plugin**
+- [x] **Step 4: Autorizar comando del plugin**
 
 En `src-tauri/capabilities/desktop.json`, dejar permisos así:
 
@@ -137,7 +137,7 @@ En `src-tauri/capabilities/desktop.json`, dejar permisos así:
 
 No ejecutar `tauri add log`: plugin Rust ya está instalado y configurado; ese comando podría reescribir `lib.rs`.
 
-- [ ] **Step 5: Implementar adaptador mínimo**
+- [x] **Step 5: Implementar adaptador mínimo**
 
 Crear `src/lib/registro.js`:
 
@@ -177,7 +177,7 @@ export function crearRegistro({
 }
 ```
 
-- [ ] **Step 6: Ejecutar test focal y suite completa**
+- [x] **Step 6: Ejecutar test focal y suite completa**
 
 Run:
 
@@ -189,7 +189,7 @@ npm run build
 
 Expected: `6 passed` en `registro.test.js`; suite completa verde; Vite genera `dist/` sin errores.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```powershell
 git add package.json package-lock.json src-tauri/capabilities/desktop.json src/lib/registro.js tests/registro.test.js
@@ -210,7 +210,7 @@ git commit -m "feat: añadir registro frontend seguro"
 - Produces: `actualizarApp({ comprobar, relanzar, registro }): Promise<void>`.
 - Eventos: comprobación, sin actualización, versión encontrada, instalación terminada y error.
 
-- [ ] **Step 1: Sustituir tests por expectativas de eventos**
+- [x] **Step 1: Sustituir tests por expectativas de eventos**
 
 En `tests/actualizacion.test.js`, mantener imports y sustituir `describe` completo:
 
@@ -292,7 +292,7 @@ describe('actualizarApp', () => {
 });
 ```
 
-- [ ] **Step 2: Ejecutar tests y confirmar fallo**
+- [x] **Step 2: Ejecutar tests y confirmar fallo**
 
 Run:
 
@@ -302,7 +302,7 @@ npx vitest run tests/actualizacion.test.js
 
 Expected: FAIL porque implementación todavía no usa `registro`.
 
-- [ ] **Step 3: Implementar eventos updater**
+- [x] **Step 3: Implementar eventos updater**
 
 Sustituir función de `src/lib/actualizacion.js`:
 
@@ -325,7 +325,7 @@ export async function actualizarApp({ comprobar, relanzar, registro }) {
 }
 ```
 
-- [ ] **Step 4: Crear registro compartido en main**
+- [x] **Step 4: Crear registro compartido en main**
 
 En `src/main.js` añadir:
 
@@ -345,7 +345,7 @@ Cambiar llamada final:
 actualizarApp({ comprobar: check, relanzar: relaunch, registro });
 ```
 
-- [ ] **Step 5: Ejecutar test focal, suite y build**
+- [x] **Step 5: Ejecutar test focal, suite y build**
 
 Run:
 
@@ -357,7 +357,7 @@ npm run build
 
 Expected: `4 passed` en test focal; suite completa verde; build verde.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```powershell
 git add src/lib/actualizacion.js tests/actualizacion.test.js src/main.js
@@ -378,7 +378,7 @@ git commit -m "feat: registrar eventos del updater"
 - Produces: `registrarResultadoSync(registro, resultado): Promise<void>`.
 - Estados soportados: `actualizado`, `sin_cambios`, `error`, `dev`; cualquier otro estado seguro se trata como sin cambios.
 
-- [ ] **Step 1: Añadir tests rojos de resultados sync**
+- [x] **Step 1: Añadir tests rojos de resultados sync**
 
 Cambiar import de `tests/registro.test.js`:
 
@@ -440,7 +440,7 @@ describe('registrarResultadoSync', () => {
 });
 ```
 
-- [ ] **Step 2: Ejecutar tests y confirmar fallo**
+- [x] **Step 2: Ejecutar tests y confirmar fallo**
 
 Run:
 
@@ -450,7 +450,7 @@ npx vitest run tests/registro.test.js
 
 Expected: FAIL porque `registrarResultadoSync` no está exportada.
 
-- [ ] **Step 3: Implementar clasificador de resultado**
+- [x] **Step 3: Implementar clasificador de resultado**
 
 Añadir a `src/lib/registro.js`:
 
@@ -476,7 +476,7 @@ export async function registrarResultadoSync(registro, resultado) {
 }
 ```
 
-- [ ] **Step 4: Cablear eventos en main**
+- [x] **Step 4: Cablear eventos en main**
 
 Cambiar import:
 
@@ -505,7 +505,7 @@ async function sincronizar() {
 }
 ```
 
-- [ ] **Step 5: Ejecutar test focal, suite, build y Rust**
+- [x] **Step 5: Ejecutar test focal, suite, build y Rust**
 
 Run:
 
@@ -519,7 +519,7 @@ cargo test --manifest-path src-tauri/Cargo.toml
 
 Expected: `10 passed` en `registro.test.js`; suite JS completa verde; build verde; 9 tests Rust verdes.
 
-- [ ] **Step 6: Confirmar que motor protegido no cambió**
+- [x] **Step 6: Confirmar que motor protegido no cambió**
 
 Run:
 
@@ -529,7 +529,7 @@ git diff -- src-tauri/src/sync.rs src-tauri/src/lib.rs src-tauri/tauri.conf.json
 
 Expected: sin salida.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```powershell
 git add src/lib/registro.js tests/registro.test.js src/main.js
@@ -550,7 +550,7 @@ git commit -m "feat: registrar eventos de sincronización"
 - Produces: build local `0.1.3` con evidencia real de eventos frontend en `entorno.log`.
 - Release: solo tras integrar rama y verificar archivo/panel.
 
-- [ ] **Step 1: Subir versión a 0.1.3**
+- [x] **Step 1: Subir versión a 0.1.3**
 
 En `src-tauri/tauri.conf.json`:
 
@@ -564,7 +564,7 @@ En `src-tauri/Cargo.toml`:
 version = "0.1.3"
 ```
 
-- [ ] **Step 2: Regenerar semilla y ejecutar verificación automática completa**
+- [x] **Step 2: Regenerar semilla y ejecutar verificación automática completa**
 
 Run:
 
@@ -585,7 +585,7 @@ Expected:
 - build Vite verde;
 - `git diff --check` sin errores.
 
-- [ ] **Step 3: Arrancar Tauri y producir eventos reales**
+- [x] **Step 3: Arrancar Tauri y producir eventos reales**
 
 Run:
 
@@ -602,7 +602,7 @@ Expected:
 - updater recibe `[updater] comprobación`;
 - si `v0.1.3` aún no está publicada, recibe `[updater] sin actualización`.
 
-- [ ] **Step 4: Verificar panel admin**
+- [x] **Step 4: Verificar panel admin**
 
 Con app abierta:
 
@@ -611,7 +611,7 @@ Con app abierta:
 3. Confirmar app sigue mostrando contenido normal.
 4. Cerrar panel y app.
 
-- [ ] **Step 5: Verificar archivo real**
+- [x] **Step 5: Verificar archivo real**
 
 Run:
 
@@ -622,7 +622,7 @@ Get-Content -LiteralPath $log -Tail 50
 
 Expected: mismas líneas `[sync]` y `[updater]` observadas en panel.
 
-- [ ] **Step 6: Commit de versión**
+- [x] **Step 6: Commit de versión**
 
 Revisar cambios:
 
@@ -640,7 +640,7 @@ git commit -m "chore: preparar versión 0.1.3"
 
 Si `Cargo.lock` o semilla no cambiaron, `git add` los ignora sin error.
 
-- [ ] **Step 7: Gate de publicación**
+- [x] **Step 7: Gate de publicación**
 
 No crear tag todavía. Ejecutar `superpowers:finishing-a-development-branch`, integrar rama elegida por usuario y comprobar `main`.
 
@@ -677,4 +677,3 @@ Tras publicar:
 git add docs/superpowers/plans/2026-07-30-robustez-logs-frontend.md docs/REGISTRO.md
 git commit -m "docs: registrar robustez de logs frontend"
 ```
-

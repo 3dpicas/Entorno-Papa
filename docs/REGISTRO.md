@@ -6,21 +6,21 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloques 4 y 5 completos salvo lo presencial.** Las 22 tareas del plan están ejecutadas; lo que queda no es código.
+- **Fase:** ✅ **Bloques 4 y 5 completos; robustez post-v1 publicada.** Sync y updater ya dejan diagnóstico seguro en `entorno.log`. Quedan tareas presenciales, revisión de contenido y capturas.
 - **Siguiente paso: todo lo pendiente es del autor y necesita estar delante de los equipos.** Por orden de importancia:
   1. Instalar en el segundo PC del padre (Tarea 19 Step 3) → cierra el Bloque 4, tag `bloque-4`.
   2. **Ver al padre usarlo diez minutos sin ayuda** (Tarea 22 Step 3): es la prueba de aceptación real de la v1, y lo único que puede decir si esto sirve de algo.
   3. Las 35 capturas de las guías (Tarea 20 Step 2) y una lectura del texto de las guías.
   4. Abrir las 13 URLs en un navegador de verdad: `curl` confirma que responden, no que la portada sea la correcta ni que no pidan registro.
-- **Repos:** `entorno-app` @ `c6284eb` / tags `bloque-3`, `v0.1.0`, `v0.1.1`, `v0.1.2` · `entorno-contenido` @ `0872dc0` (contenido v6) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Repos:** `entorno-app` @ `abc7b80` / tags `bloque-3`, `v0.1.0`, `v0.1.1`, `v0.1.2`, `v0.1.3` · `entorno-contenido` @ `0872dc0` (contenido v6) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
 - **Primer PC del padre ya instalado** (2026-07-28): v0.1.1 funcionando; el único fallo que encontró usándola fue el enlace del solitario, ya corregido en el contenido v3. Queda el segundo equipo.
 - **Entorno del padre (condiciona el contenido):** Gmail, Brave instalado y por defecto, móvil Android, prensa local de Burgos.
-- **Releases publicadas:** `v0.1.0`, `v0.1.1` y `v0.1.2` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar al segundo PC:** el `*-setup.exe` de la última release, en `https://github.com/3dpicas/entorno-app/releases`.
+- **Releases publicadas:** `v0.1.0`, `v0.1.1`, `v0.1.2` y `v0.1.3` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar al segundo PC:** el `*-setup.exe` de la última release, en `https://github.com/3dpicas/entorno-app/releases`.
 - **Clave de firma:** privada en `%USERPROFILE%\.tauri\entorno-papa.key`, contraseña en el gestor del autor, ambas también como secretos de `3dpicas/entorno-app`. Si se pierden, los PCs del padre dejan de aceptar actualizaciones y hay que reinstalar a mano.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
-- **Última sesión:** 2026-07-28/29 — Bloques 4 y 5 enteros salvo lo presencial: icono e instalador NSIS en español, auto-actualización firmada (vista pasar sola de v0.1.0 a v0.1.1 y de v0.1.1 a v0.1.2), 5 guías reales, kiosco de prensa con Burgos, iconos en las tarjetas y sección Jugar. **El binario ya no es `app.exe` sino `entorno-papa.exe`.** 47 tests JS + 9 tests Rust en verde.
+- **Última sesión:** 2026-07-30 — robustez de diagnóstico frontend terminada: adaptador oficial de log, eventos de sync/updater, saneamiento de errores, prueba real en panel y archivo, semilla v6 regenerada y release `v0.1.3` publicada. **Verificación final:** 60 tests JS + 9 tests Rust y build Vite en verde.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
-- **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` en `src-tauri` responde `test result: ok. 0 passed` — correcto, todavía no hay código Rust propio que probar.
+- **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` ejecuta 9 tests Rust. Si el target incremental antiguo da `LNK1104`, usar un target limpio: el código no fue la causa y 9/9 pasaron desde `%TEMP%`.
 
 ---
 
@@ -536,4 +536,21 @@ Cambio de contenido, no tarea del plan (`PROTOCOLO.md` § escalabilidad). Se ano
 
 ## Post-v1 (mejoras y contenido tras la entrega)
 
-*(vacío)*
+### Robustez de `entorno.log` para sync y updater — HECHA Y PUBLICADA (2026-07-30)
+
+- **Commits de `entorno-app`:** `abcab21` (adaptador seguro y binding oficial) · `c1e097b` (eventos del updater) · `80da81c` (eventos de sync) · `ac88a77` (versión 0.1.3) · `47cc5a5` (saneamiento tras revisión) · `abc7b80` (semilla v6 actualizada) · tag/release `v0.1.3`.
+- **Qué cambió:**
+  - `@tauri-apps/plugin-log` y permiso mínimo `log:default`; el plugin Rust existente conserva `entorno.log`, nivel `Info`, límite de 1 MB y dos rotaciones.
+  - Sync registra inicio, sin cambios, actualización con versión/SHA, omisión en desarrollo y error. Updater registra comprobación, ausencia de actualización, versión encontrada, instalación/reinicio y error.
+  - El adaptador absorbe fallos del propio logger y causas hostiles. Cada entrada queda en una línea, sin caracteres de control, con rutas Windows/UNC ocultas y máximo 500 caracteres. Nunca bloquea arranque, sync ni updater.
+- **Verificado:**
+  - TDD rojo/verde en cada bloque. Revisión independiente detectó dos fallos importantes del primer adaptador; se añadieron regresiones y la revisión final quedó en `Ready to merge: Yes`.
+  - Suite final: `Test Files 12 passed (12)`, `Tests 60 passed (60)`; `vite build` verde; Rust `9 passed, 0 failed` desde target limpio; `git diff --check` limpio.
+  - Tauri real v0.1.3, inspeccionado por CDP: panel admin con `App: v0.1.3`, `Contenido: v6 (0872dc0)`, estado normal y líneas `[sync]`/`[updater]`; pantalla principal siguió mostrando Aprender, Prensa y Jugar.
+  - Archivo real `%LOCALAPPDATA%\com.marquibel.entorno\logs\entorno.log`: `[sync] inicio`, `[sync] omitido en desarrollo`, `[updater] comprobación` y `[updater] sin actualización`.
+  - GitHub Actions run `30580518745` terminó en `success`. Release `v0.1.3` no borrador ni prerelease, apuntando a `abc7b80`, con `Entorno.de.Papa_0.1.3_x64-setup.exe`, `.sig` y `latest.json`.
+- **Desviaciones y aprendizaje:**
+  1. El worktree anidado de `entorno-app` no veía el repo hermano `entorno-contenido`; conservó la semilla commiteada durante desarrollo. Tras integrar en `main`, `npm run semilla` sí encontró el hermano y añadió contenido v6/iconos en `abc7b80` antes del tag.
+  2. El target Cargo incremental del repo principal acabó rechazando nuevos ejecutables con `LNK1104`, sin procesos reteniéndolos y con ACL/escritura normales. Un target nuevo en `%TEMP%` compiló y pasó 9/9; la caché temporal se eliminó. No hubo cambio de código para esconder el fallo.
+  3. En ejecuciones dev con red restringida, updater registró el error de GitHub; en la prueba final con red registró `sin actualización`. Ambos caminos quedan diagnosticados.
+- **Pendientes que deja:** ninguno de código para esta mejora. Siguen independientes: instalar/verificar en segundo PC, observar al padre diez minutos, abrir URLs en navegador real, revisar texto y hacer las 35 capturas de las guías.
