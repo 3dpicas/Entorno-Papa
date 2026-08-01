@@ -6,19 +6,18 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** 🔨 **Bloque 6 implementado y verificado en local; SIN PUBLICAR.** Tareas 1–6 del plan hechas (botón de búsqueda, comando Brave, sección Compras con guía, cuatro juegos, versión 0.1.4 con semilla v8). Falta empujar los repos, publicar la release y la aceptación presencial.
-- **Siguiente paso:**
-  1. **Publicar** (decisión del autor, porque actualiza los PCs del padre en remoto): `git push` en `entorno-contenido` y `entorno-app`, tag `v0.1.4` y comprobar el workflow `release` (Tarea 6, Steps 7–8).
-  2. Aceptación presencial del Bloque 6 (Tarea 7): actualizar en los dos PCs, buscar, entrar en cada tienda, abrir cada juego y **verle usarlo sin ayuda**.
-  3. Abrir los cuatro juegos en Brave y empezar una partida (Tarea 5 Step 3): el HTTP confirma que responden con el título correcto, no que se juegue sin registro.
-  4. Pendientes de la v1 que siguen abiertos: segundo PC del padre (Tarea 19 Step 3), las 35 capturas de las guías, revisión del texto de las guías.
-- **Repos:** `entorno-app` @ `5bdd409` (v0.1.4, sin publicar) / tags `bloque-3`, `v0.1.0`…`v0.1.3` · `entorno-contenido` @ `83536e8` (contenido v8, sin publicar) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Fase:** 🚀 **Bloque 6 publicado (v0.1.4 + contenido v8); falta solo la aceptación presencial.** Tareas 1–6 del plan hechas y en producción: botón de búsqueda, comando Brave, sección Compras con guía, cuatro juegos. Queda la Tarea 7, que es estar delante de los equipos.
+- **Siguiente paso: todo lo pendiente necesita al autor delante de un PC.**
+  1. Aceptación del Bloque 6 (Tarea 7): en los dos PCs del padre, comprobar que se actualizan solos a v0.1.4/v8, pulsar Buscar, entrar en cada tienda y abrir cada juego; después **verle usarlo sin ayuda**. Solo entonces se etiqueta `bloque-6`.
+  2. Abrir los cuatro juegos en Brave y empezar una partida (Tarea 5 Step 3): el HTTP confirma que responden con el título correcto, no que se juegue sin registro.
+  3. Pendientes de la v1 que siguen abiertos: segundo PC del padre (Tarea 19 Step 3), las 35 capturas de las guías, revisión del texto de las guías.
+- **Repos:** `entorno-app` @ `5bdd409` / tags `bloque-3`, `v0.1.0`…`v0.1.4` · `entorno-contenido` @ `83536e8` (contenido v8) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
 - **Primer PC del padre ya instalado** (2026-07-28): v0.1.1 funcionando; el único fallo que encontró usándola fue el enlace del solitario, ya corregido en el contenido v3. Queda el segundo equipo.
 - **Entorno del padre (condiciona el contenido):** Gmail, Brave instalado y por defecto, móvil Android, prensa local de Burgos.
-- **Releases publicadas:** `v0.1.0`, `v0.1.1`, `v0.1.2` y `v0.1.3` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar al segundo PC:** el `*-setup.exe` de la última release, en `https://github.com/3dpicas/entorno-app/releases`.
+- **Releases publicadas:** `v0.1.0`, `v0.1.1`, `v0.1.2`, `v0.1.3` y `v0.1.4` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar al segundo PC:** el `*-setup.exe` de la última release, en `https://github.com/3dpicas/entorno-app/releases`.
 - **Clave de firma:** privada en `%USERPROFILE%\.tauri\entorno-papa.key`, contraseña en el gestor del autor, ambas también como secretos de `3dpicas/entorno-app`. Si se pierden, los PCs del padre dejan de aceptar actualizaciones y hay que reinstalar a mano.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
-- **Última sesión:** 2026-08-01 — Bloque 6 implementado en local: botón «BUSCAR EN INTERNET», comando Rust que abre Brave con URL fija, sección Compras con guía de ocho pasos y cinco tiendas, cuatro juegos, versión 0.1.4 y semilla v8. **Verificación final:** 65 tests JS + 12 tests Rust, `cargo fmt --check`, build Vite y `Contenido OK`, más la app real medida por CDP a cuatro resoluciones. **Nada publicado todavía.**
+- **Última sesión:** 2026-08-01 — Bloque 6 implementado y publicado: botón «BUSCAR EN INTERNET», comando Rust que abre Brave con URL fija, sección Compras con guía de ocho pasos y cinco tiendas, cuatro juegos, versión 0.1.4 y semilla v8. **Verificación final:** 65 tests JS + 12 tests Rust, `cargo fmt --check`, build Vite y `Contenido OK`; app real medida por CDP a cuatro resoluciones; release `v0.1.4` en verde y **la app instalada del autor se actualizó sola de 0.1.2 a 0.1.4** y sincronizó el contenido v8.
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` ejecuta 9 tests Rust. Si el target incremental antiguo da `LNK1104`, usar un target limpio: el código no fue la causa y 9/9 pasaron desde `%TEMP%`.
 
@@ -617,4 +616,16 @@ Plan: `docs/superpowers/plans/2026-07-31-bloque-6-compras-buscador-juegos.md`. S
 - **Commit (`entorno-app`):** `5bdd409`
 - **Verificado:** `npm run semilla` → `Semilla actualizada desde entorno-contenido` y `Semilla v8 · secciones: aprender, compras, prensa, jugar`. Verificación completa en verde: 65 tests JS, `vite build`, `cargo fmt --check`, 12 tests Rust, `Contenido OK` y `Cargo.lock` con `entorno-papa` en `0.1.4`.
 - **Desviaciones del plan:** Ninguna.
-- **Pendientes que deja:** **los Steps 7 y 8 —empujar los tres repos, tag `v0.1.4` y comprobar el workflow `release`— están sin hacer a propósito.** Publicar dispara la actualización automática en los PCs del padre; es decisión del autor, no del asistente.
+- **Pendientes que deja:** Ninguno.
+
+### Publicación de la v0.1.4 y del contenido v8 — 2026-08-01
+
+Se publicó con el visto bueno explícito del autor: empujar dispara la actualización automática en los PCs del padre, así que la decisión no es del asistente.
+
+- **Orden:** primero `entorno-contenido` (`0872dc0..83536e8`), luego `entorno-app` (`abc7b80..5bdd409`) con el tag `v0.1.4`, y por último el repo de documentación.
+- **Verificado:**
+  - Workflow `release` (run `30705095838`) en `success` en 6 m 39 s. Release `v0.1.4` **no borrador ni prerelease**, apuntando a `5bdd409`, con los tres artefactos: `Entorno.de.Papa_0.1.4_x64-setup.exe` (3,67 MB), su `.sig` (428 B) y `latest.json` (1,3 KB).
+  - `latest.json` servido desde `releases/latest/download`: `"version": "0.1.4"`, `pub_date` `2026-08-01T15:10:30Z` y las dos claves `windows-x86_64` y `windows-x86_64-nsis` con firma y URL de descarga.
+  - CI `check.yml` del contenido en `success` sobre `83536e8`.
+  - **Ciclo completo visto funcionar en la máquina del autor:** la app instalada estaba en `FileVersion = 0.1.2`; al abrirla se actualizó sola, el proceso viejo murió y el nuevo arrancó (pid 25304, 17:13:48) con el ejecutable ya en `0.1.4`. Inspeccionada por CDP en `http://tauri.localhost/` (producción, no vite): secciones `Aprender, Compras, Prensa, Jugar`, el botón `🔎BUSCAR EN INTERNET` —que solo existe en 0.1.4— e indicador `Contenido v8 · 01/08/2026`, con las 6 tarjetas de Compras y 5 de 5 iconos cargados.
+- **Pendiente:** la aceptación en los PCs del padre y con el padre (Tarea 7). Hasta entonces **no se etiqueta `bloque-6`**.

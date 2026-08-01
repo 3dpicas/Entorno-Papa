@@ -1024,7 +1024,7 @@ git add src-tauri/Cargo.toml src-tauri/Cargo.lock src-tauri/tauri.conf.json recu
 git commit -m "chore: preparar versión 0.1.4 con contenido v8"
 ```
 
-- [ ] **Step 7: Publicar contenido y app**
+- [x] **Step 7: Publicar contenido y app**
 
 ```powershell
 cd B:\01_Proyectos\Entorno-para-Papa\entorno-contenido
@@ -1036,7 +1036,7 @@ git tag v0.1.4
 git push origin v0.1.4
 ```
 
-- [ ] **Step 8: Verificar GitHub Actions y assets**
+- [x] **Step 8: Verificar GitHub Actions y assets**
 
 ```powershell
 $releaseRun = gh run list --workflow release.yml --limit 1 --json databaseId --jq '.[0].databaseId'
