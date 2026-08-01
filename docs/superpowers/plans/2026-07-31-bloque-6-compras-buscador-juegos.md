@@ -57,7 +57,7 @@
 - Consumes: `manifest.secciones`, `navegarA(hash: string)`, `alBuscarInternet(): void | Promise<void>`
 - Produces: `renderInicio(manifest, { navegarA, alBuscarInternet }): HTMLElement`, selector `.boton-buscar-internet`
 
-- [ ] **Step 1: Confirmar base verde**
+- [x] **Step 1: Confirmar base verde**
 
 Run:
 
@@ -68,7 +68,7 @@ npm test
 
 Expected: 60 tests verdes antes del cambio.
 
-- [ ] **Step 2: Escribir test rojo del botón**
+- [x] **Step 2: Escribir test rojo del botón**
 
 Reemplazar `tests/inicio.test.js` por:
 
@@ -128,7 +128,7 @@ describe('renderInicio', () => {
 });
 ```
 
-- [ ] **Step 3: Ejecutar test y comprobar fallo correcto**
+- [x] **Step 3: Ejecutar test y comprobar fallo correcto**
 
 Run:
 
@@ -138,7 +138,7 @@ npm test -- tests/inicio.test.js
 
 Expected: FAIL en `buscar aparece primero...` porque `.boton-buscar-internet` no existe.
 
-- [ ] **Step 4: Implementar UI mínima**
+- [x] **Step 4: Implementar UI mínima**
 
 Reemplazar `src/ui/inicio.js` por:
 
@@ -195,7 +195,7 @@ export function renderInicio(manifest, { navegarA, alBuscarInternet }) {
 }
 ```
 
-- [ ] **Step 5: Aplicar estilos aprobados**
+- [x] **Step 5: Aplicar estilos aprobados**
 
 Añadir antes de `.pantalla-inicio header` en `src/styles/base.css`:
 
@@ -231,7 +231,7 @@ Reemplazar el bloque `.parrilla-secciones` por:
 }
 ```
 
-- [ ] **Step 6: Verificar UI aislada y build**
+- [x] **Step 6: Verificar UI aislada y build**
 
 Run:
 
@@ -242,7 +242,7 @@ npm run build
 
 Expected: 4 tests de Inicio verdes; Vite termina con `built in`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```powershell
 git add tests/inicio.test.js src/ui/inicio.js src/styles/base.css
@@ -262,7 +262,7 @@ git commit -m "feat: añadir botón de búsqueda en Inicio"
 - Consumes: variables `ProgramFiles`, `ProgramFiles(x86)`, `LOCALAPPDATA`
 - Produces: comando Tauri `abrir_busqueda_brave() -> String`, estados `abierto` y `no_disponible`
 
-- [ ] **Step 1: Añadir módulo con tests todavía sin implementación**
+- [x] **Step 1: Añadir módulo con tests todavía sin implementación**
 
 Crear `src-tauri/src/busqueda.rs`:
 
@@ -325,7 +325,7 @@ Añadir junto a los módulos de `src-tauri/src/lib.rs`:
 mod busqueda;
 ```
 
-- [ ] **Step 2: Ejecutar test y comprobar rojo**
+- [x] **Step 2: Ejecutar test y comprobar rojo**
 
 Desde `entorno-app/src-tauri`:
 
@@ -336,7 +336,7 @@ cargo test busqueda
 
 Expected: FAIL de compilación por imports sin definir en `busqueda.rs`.
 
-- [ ] **Step 3: Implementar localización y lanzamiento**
+- [x] **Step 3: Implementar localización y lanzamiento**
 
 Reemplazar `src-tauri/src/busqueda.rs` por:
 
@@ -447,7 +447,7 @@ mod tests {
 }
 ```
 
-- [ ] **Step 4: Registrar comando**
+- [x] **Step 4: Registrar comando**
 
 Dentro de `tauri::generate_handler!` en `src-tauri/src/lib.rs`, añadir como primera entrada:
 
@@ -468,7 +468,7 @@ El bloque empezará así:
 ])
 ```
 
-- [ ] **Step 5: Formatear y verificar**
+- [x] **Step 5: Formatear y verificar**
 
 ```powershell
 cargo fmt
@@ -479,7 +479,7 @@ cargo test
 
 Expected: 3 tests de búsqueda y suite Rust completa verdes.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```powershell
 git add src-tauri/src/busqueda.rs src-tauri/src/lib.rs
@@ -499,7 +499,7 @@ git commit -m "feat: abrir Brave Search con comando seguro"
 - Consumes: `invocar(nombre: string): Promise<string>`, `abrirUrl(url: string): Promise<void>`, `registro.info`, `registro.error`
 - Produces: `abrirBusquedaInternet({ invocar, abrirUrl, registro }): Promise<void>`
 
-- [ ] **Step 1: Escribir tests rojos**
+- [x] **Step 1: Escribir tests rojos**
 
 Crear `tests/busqueda.test.js`:
 
@@ -582,7 +582,7 @@ describe('abrirBusquedaInternet', () => {
 });
 ```
 
-- [ ] **Step 2: Ejecutar tests y comprobar rojo**
+- [x] **Step 2: Ejecutar tests y comprobar rojo**
 
 ```powershell
 npm test -- tests/busqueda.test.js
@@ -590,7 +590,7 @@ npm test -- tests/busqueda.test.js
 
 Expected: FAIL porque `src/lib/busqueda.js` no existe.
 
-- [ ] **Step 3: Implementar orquestador**
+- [x] **Step 3: Implementar orquestador**
 
 Crear `src/lib/busqueda.js`:
 
@@ -619,7 +619,7 @@ export async function abrirBusquedaInternet({ invocar, abrirUrl, registro }) {
 }
 ```
 
-- [ ] **Step 4: Conectar Inicio en `main.js`**
+- [x] **Step 4: Conectar Inicio en `main.js`**
 
 Añadir import:
 
@@ -644,7 +644,7 @@ registrarRuta(/^#\/$/, () =>
   renderInicio(manifest, { navegarA, alBuscarInternet }));
 ```
 
-- [ ] **Step 5: Verificar integración**
+- [x] **Step 5: Verificar integración**
 
 ```powershell
 npm test -- tests/busqueda.test.js tests/inicio.test.js
@@ -654,7 +654,7 @@ npm run build
 
 Expected: 65 tests totales verdes y build Vite verde.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```powershell
 git add src/lib/busqueda.js tests/busqueda.test.js src/main.js
@@ -678,7 +678,7 @@ git commit -m "feat: integrar búsqueda con respaldo y logs"
 - Consumes: tipos existentes `guia` y `enlace`, grupos existentes, descargador de favicons
 - Produces: contenido v7 con sección `compras` y guía de ocho pasos
 
-- [ ] **Step 1: Confirmar contenido base**
+- [x] **Step 1: Confirmar contenido base**
 
 ```powershell
 cd B:\01_Proyectos\Entorno-para-Papa\entorno-contenido
@@ -687,7 +687,7 @@ npm run check
 
 Expected: `Contenido OK`.
 
-- [ ] **Step 2: Añadir guía completa**
+- [x] **Step 2: Añadir guía completa**
 
 Crear `guias/comprar-seguro.md`:
 
@@ -737,7 +737,7 @@ Confirma el pago desde la propia tienda y desde tu móvil cuando CaixaBank lo pi
 Nunca digas contraseñas o códigos por teléfono o mensaje. Si aparece una urgencia, premio o precio imposible, cancela la compra. Cancelar no estropea nada.
 ```
 
-- [ ] **Step 3: Añadir sección al manifest y provocar fallo por iconos**
+- [x] **Step 3: Añadir sección al manifest y provocar fallo por iconos**
 
 Cambiar `"version": 6` a `"version": 7`. Insertar después de sección `aprender`:
 
@@ -804,7 +804,7 @@ npm run check
 
 Expected: FAIL enumerando cinco iconos ausentes.
 
-- [ ] **Step 4: Descargar iconos y revisar archivos**
+- [x] **Step 4: Descargar iconos y revisar archivos**
 
 ```powershell
 node scripts/descargar-iconos.mjs
@@ -814,7 +814,7 @@ Get-Item iconos\amazon.png,iconos\aliexpress.png,iconos\temu.png,iconos\elcortei
 
 Expected: cinco archivos con `Length` mayor que cero. Abrirlos y confirmar que cada uno identifica su tienda; favicon genérico o incorrecto no se acepta.
 
-- [ ] **Step 5: Validar contenido y guía**
+- [x] **Step 5: Validar contenido y guía**
 
 ```powershell
 npm run check
@@ -823,7 +823,7 @@ node --input-type=module -e "import { readFileSync } from 'node:fs'; import { pa
 
 Expected: `Contenido OK` y `Guía OK: 8 pasos`.
 
-- [ ] **Step 6: Commit de contenido**
+- [x] **Step 6: Commit de contenido**
 
 ```powershell
 git add manifest.json guias/comprar-seguro.md iconos/amazon.png iconos/aliexpress.png iconos/temu.png iconos/elcorteingles.png iconos/carrefour.png
@@ -841,7 +841,7 @@ git commit -m "feat: añadir sección de compras seguras"
 - Consumes: sección `jugar`, tipo `enlace`, `iconos/solitario.png`
 - Produces: contenido v8 con cuatro juegos en orden fijo
 
-- [ ] **Step 1: Actualizar versión y tarjetas**
+- [x] **Step 1: Actualizar versión y tarjetas**
 
 Cambiar manifest a `"version": 8`. Reemplazar tarjetas de sección `jugar` por:
 
@@ -874,7 +874,7 @@ Cambiar manifest a `"version": 8`. Reemplazar tarjetas de sección `jugar` por:
 ]
 ```
 
-- [ ] **Step 2: Validar contrato exacto**
+- [x] **Step 2: Validar contrato exacto**
 
 ```powershell
 npm run check
@@ -895,7 +895,7 @@ Abrir cada URL directamente en Brave. Para cada una:
 
 Expected: cuatro juegos utilizables; ninguna redirección inesperada.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```powershell
 git add manifest.json
@@ -916,7 +916,7 @@ git commit -m "feat: añadir Spider y Carta blanca"
 - Consumes: app con Tasks 1–3; contenido v8 con Tasks 4–5
 - Produces: release firmada `v0.1.4` con semilla v8
 
-- [ ] **Step 1: Subir versión**
+- [x] **Step 1: Subir versión**
 
 En `src-tauri/Cargo.toml`:
 
@@ -930,7 +930,7 @@ En `src-tauri/tauri.conf.json`:
 "version": "0.1.4"
 ```
 
-- [ ] **Step 2: Regenerar semilla**
+- [x] **Step 2: Regenerar semilla**
 
 Desde `entorno-app`:
 
@@ -941,7 +941,7 @@ node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync('recursos/co
 
 Expected: `Semilla actualizada desde entorno-contenido` y `Semilla v8`.
 
-- [ ] **Step 3: Ejecutar verificación automatizada completa**
+- [x] **Step 3: Ejecutar verificación automatizada completa**
 
 ```powershell
 npm test
@@ -962,7 +962,7 @@ Expected:
 - `Contenido OK`;
 - `Cargo.lock` actualizado a paquete `entorno-papa` v0.1.4.
 
-- [ ] **Step 4: Verificar UI real en tres resoluciones**
+- [x] **Step 4: Verificar UI real en tres resoluciones**
 
 Arrancar desde `entorno-app`:
 
@@ -1002,7 +1002,7 @@ Expected:
 - texto contiene `BUSCAR EN INTERNET`;
 - secciones: Aprender, Compras, Prensa, Jugar.
 
-- [ ] **Step 5: Verificar flujos reales**
+- [x] **Step 5: Verificar flujos reales**
 
 Con app Tauri abierta:
 
@@ -1015,7 +1015,7 @@ Con app Tauri abierta:
 
 Expected: ningún diálogo técnico, enlace roto, icono ausente o título cortado.
 
-- [ ] **Step 6: Commit de versión y semilla**
+- [x] **Step 6: Commit de versión y semilla**
 
 Desde `entorno-app`:
 

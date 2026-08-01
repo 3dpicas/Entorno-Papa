@@ -6,19 +6,19 @@ Bitácora de ejecución. Se rellena según `docs/PROTOCOLO.md`. Entradas nuevas 
 
 ## 📍 Estado actual
 
-- **Fase:** ✅ **Bloques 4 y 5 completos; robustez post-v1 publicada.** Sync y updater ya dejan diagnóstico seguro en `entorno.log`. Quedan tareas presenciales, revisión de contenido y capturas.
-- **Siguiente paso: todo lo pendiente es del autor y necesita estar delante de los equipos.** Por orden de importancia:
-  1. Instalar en el segundo PC del padre (Tarea 19 Step 3) → cierra el Bloque 4, tag `bloque-4`.
-  2. **Ver al padre usarlo diez minutos sin ayuda** (Tarea 22 Step 3): es la prueba de aceptación real de la v1, y lo único que puede decir si esto sirve de algo.
-  3. Las 35 capturas de las guías (Tarea 20 Step 2) y una lectura del texto de las guías.
-  4. Abrir las 13 URLs en un navegador de verdad: `curl` confirma que responden, no que la portada sea la correcta ni que no pidan registro.
-- **Repos:** `entorno-app` @ `abc7b80` / tags `bloque-3`, `v0.1.0`, `v0.1.1`, `v0.1.2`, `v0.1.3` · `entorno-contenido` @ `0872dc0` (contenido v6) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
+- **Fase:** 🔨 **Bloque 6 implementado y verificado en local; SIN PUBLICAR.** Tareas 1–6 del plan hechas (botón de búsqueda, comando Brave, sección Compras con guía, cuatro juegos, versión 0.1.4 con semilla v8). Falta empujar los repos, publicar la release y la aceptación presencial.
+- **Siguiente paso:**
+  1. **Publicar** (decisión del autor, porque actualiza los PCs del padre en remoto): `git push` en `entorno-contenido` y `entorno-app`, tag `v0.1.4` y comprobar el workflow `release` (Tarea 6, Steps 7–8).
+  2. Aceptación presencial del Bloque 6 (Tarea 7): actualizar en los dos PCs, buscar, entrar en cada tienda, abrir cada juego y **verle usarlo sin ayuda**.
+  3. Abrir los cuatro juegos en Brave y empezar una partida (Tarea 5 Step 3): el HTTP confirma que responden con el título correcto, no que se juegue sin registro.
+  4. Pendientes de la v1 que siguen abiertos: segundo PC del padre (Tarea 19 Step 3), las 35 capturas de las guías, revisión del texto de las guías.
+- **Repos:** `entorno-app` @ `5bdd409` (v0.1.4, sin publicar) / tags `bloque-3`, `v0.1.0`…`v0.1.3` · `entorno-contenido` @ `83536e8` (contenido v8, sin publicar) / tag `bloque-0` · `Entorno-Papa` (docs) al día. Los tres en GitHub bajo `3dpicas`, rama `main`.
 - **Primer PC del padre ya instalado** (2026-07-28): v0.1.1 funcionando; el único fallo que encontró usándola fue el enlace del solitario, ya corregido en el contenido v3. Queda el segundo equipo.
 - **Entorno del padre (condiciona el contenido):** Gmail, Brave instalado y por defecto, móvil Android, prensa local de Burgos.
 - **Releases publicadas:** `v0.1.0`, `v0.1.1`, `v0.1.2` y `v0.1.3` en `3dpicas/entorno-app`, con instalador, firma y `latest.json`. **Instalador para llevar al segundo PC:** el `*-setup.exe` de la última release, en `https://github.com/3dpicas/entorno-app/releases`.
 - **Clave de firma:** privada en `%USERPROFILE%\.tauri\entorno-papa.key`, contraseña en el gestor del autor, ambas también como secretos de `3dpicas/entorno-app`. Si se pierden, los PCs del padre dejan de aceptar actualizaciones y hay que reinstalar a mano.
 - **GitHub:** ✅ los tres repos publicados en `3dpicas` (`Entorno-Papa`, `entorno-app`, `entorno-contenido`), públicos, rama `main`, con los tags de bloque subidos. Sync real verificado de punta a punta y CI en verde — ver «Publicación en GitHub y prueba del sync real» en el Bloque 3.
-- **Última sesión:** 2026-07-30 — robustez de diagnóstico frontend terminada: adaptador oficial de log, eventos de sync/updater, saneamiento de errores, prueba real en panel y archivo, semilla v6 regenerada y release `v0.1.3` publicada. **Verificación final:** 60 tests JS + 9 tests Rust y build Vite en verde.
+- **Última sesión:** 2026-08-01 — Bloque 6 implementado en local: botón «BUSCAR EN INTERNET», comando Rust que abre Brave con URL fija, sección Compras con guía de ocho pasos y cinco tiendas, cuatro juegos, versión 0.1.4 y semilla v8. **Verificación final:** 65 tests JS + 12 tests Rust, `cargo fmt --check`, build Vite y `Contenido OK`, más la app real medida por CDP a cuatro resoluciones. **Nada publicado todavía.**
 - **Antes de escribir código:** `npm test` (entorno-app) y `npm run check` (entorno-contenido) en verde. Ver los comandos exactos en `CLAUDE.md` § «Comandos del día a día».
 - **Entorno ya resuelto:** Node 24.15.0, cargo/rustc 1.97.1 (`stable-x86_64-pc-windows-msvc`), Visual Studio Build Tools 2026, WebView2 Runtime. `cargo test` ejecuta 9 tests Rust. Si el target incremental antiguo da `LNK1104`, usar un target limpio: el código no fue la causa y 9/9 pasaron desde `%TEMP%`.
 
@@ -554,3 +554,67 @@ Cambio de contenido, no tarea del plan (`PROTOCOLO.md` § escalabilidad). Se ano
   2. El target Cargo incremental del repo principal acabó rechazando nuevos ejecutables con `LNK1104`, sin procesos reteniéndolos y con ACL/escritura normales. Un target nuevo en `%TEMP%` compiló y pasó 9/9; la caché temporal se eliminó. No hubo cambio de código para esconder el fallo.
   3. En ejecuciones dev con red restringida, updater registró el error de GitHub; en la prueba final con red registró `sin actualización`. Ambos caminos quedan diagnosticados.
 - **Pendientes que deja:** ninguno de código para esta mejora. Siguen independientes: instalar/verificar en segundo PC, observar al padre diez minutos, abrir URLs en navegador real, revisar texto y hacer las 35 capturas de las guías.
+
+---
+
+## BLOQUE 6 — Búsqueda, compras y juegos
+
+Plan: `docs/superpowers/plans/2026-07-31-bloque-6-compras-buscador-juegos.md`. Spec: `docs/superpowers/specs/2026-07-31-ampliacion-autonomia-compras-buscador-design.md`.
+
+### Tareas 1–3: botón de búsqueda, comando Brave e integración — HECHAS (2026-08-01)
+
+- **Commits (`entorno-app`):** `f5bccc7` (botón en Inicio) · `dd906a9` (comando Rust `abrir_busqueda_brave`) · `0f7f5a2` (orquestador con respaldo y logs)
+- **Verificado:**
+  - TDD rojo→verde en los tres. Rojo del botón: `expect(boton).toBeTruthy()` → `Received: null`. Rojo de Rust: `no rutas_brave_desde in busqueda`. Rojo del orquestador: el import de `src/lib/busqueda.js` no resolvía.
+  - Suite completa: `Test Files 13 passed (13)`, `Tests 65 passed (65)`; `cargo test` → `12 passed` (9 previos + 3 de búsqueda); `cargo fmt --check` limpio; `vite build` verde.
+  - **App real (binario dev 0.1.4, pilotada por CDP), Inicio medido a cuatro tamaños con `Emulation.setDeviceMetricsOverride`:**
+
+    | Ventana | Columnas | Scroll horizontal | Scroll vertical | Texto recortado | Botón primero | Alto botón |
+    |---|---|---|---|---|---|---|
+    | 1024×768 | 2 | no | no | no | sí | 88 px |
+    | 1366×768 | 2 | no | no | no | sí | 88 px |
+    | 1600×900 | 4 | no | no | no | sí | 88 px |
+    | 1920×1080 | 4 | no | no | no | sí | 88 px |
+
+    Secciones en las cuatro: `Aprender, Compras, Prensa, Jugar`; tarjeta de sección 200 px.
+  - **Brave abierto de verdad:** al pulsar el botón, los procesos `brave` pasaron de 17 a 19 y apareció una ventana titulada `Motor de búsqueda privado - Buscador de Brave - Brave`.
+  - **Las dos capas del log escribieron**, leídas en `%LOCALAPPDATA%\com.marquibel.entorno\logs\entorno.log`:
+    ```
+    [2026-08-01][14:40:17][app_lib::busqueda][INFO] [busqueda] Brave abierto
+    [2026-08-01][14:40:17][webview:...][INFO] [busqueda] Brave abierto
+    ```
+- **Desviaciones del plan:**
+  1. **Color del botón: `#37474F` (pizarra), no el `#6D3EE8` del plan.** Ese violeta chocaba con el púrpura `#7B1FA2` de la sección Compras, que queda justo debajo en la rejilla; dos moradas contiguas se leen como lo mismo. El pizarra no compite con ninguna de las cuatro secciones y contrasta 9,6:1 con el texto blanco. Se conserva el mecanismo del plan de fijar `--color-seccion` en el propio botón, que es de donde sale el borde de foco.
+  2. `spawn` de Brave con `stdin/stdout/stderr` a `Stdio::null()`: si no, Brave hereda las tuberías de la app y las sujeta mientras viva.
+  3. Verificación por `Emulation` de CDP en vez de redimensionar la ventana por Win32, y se añadió 1600×900 (el primer tamaño donde entra la rejilla de 4). Evita la trampa de DPI documentada en la Tarea 8. Se midió también el desbordamiento **vertical**, que el plan no pedía: con cuatro secciones cabe todo sin scroll incluso a 768 px de alto.
+- **Decisiones nuevas:** Ninguna de diseño.
+- **Pendientes que deja:**
+  1. `abrir_busqueda_brave` solo mira tres rutas de instalación. Si Brave se instalara en otro sitio, el respaldo abre igualmente Brave Search en el navegador predeterminado, pero el log dirá `Brave no encontrado`.
+  2. El camino de respaldo (`no_disponible`) no se ha ejercitado en la app real: en esta máquina Brave está en la primera ruta candidata. Sí está cubierto por tests.
+
+### Tareas 4–5: sección Compras, guía y juegos — HECHAS (2026-08-01)
+
+- **Commits (`entorno-contenido`):** `bc24956` (script de iconos) · `f5edeb7` (compras, contenido v7) · `83536e8` (Spider y Carta blanca, contenido v8)
+- **Verificado:**
+  - Rojo de contenido primero: con la sección añadida y sin iconos, `npm run check` enumeró los cinco iconos ausentes. Con los iconos, `Contenido OK`.
+  - **Guía parseada con el parser real de la app** (`src/lib/guia.js`): 8 pasos, ninguno vacío, entre 128 y 238 caracteres cada uno.
+  - **Los cinco iconos revisados a la vista**, uno a uno: flecha naranja de Amazon, bolsa de AliExpress, logo naranja de Temu, triángulo verde de El Corte Inglés y las flechas azul/roja de Carrefour. Ninguno es el globo genérico.
+  - **En la app real:** sección Compras con los grupos `Antes de comprar` y `Tiendas`, las 6 tarjetas, **5 de 5 iconos con `naturalWidth > 0`** y sin scroll horizontal. La guía recorrida entera: `Paso 1 de 8` … `Paso 8 de 8`, el botón final pasa a `✔ Terminar` y devuelve a `#/`. Sección Jugar con las cuatro tarjetas y sus cuatro iconos cargados.
+  - **URLs comprobadas con tres intentos cada una** (la lección de la Tarea 22 sobre falsos negativos por antibot): AliExpress, Temu, El Corte Inglés, solitr, los dos de solitar.io, Tetris y Brave Search → 200; Amazon → 202; **Carrefour → 403**.
+  - **Carrefour resuelto abriéndolo desde la propia app:** la tarjeta abrió el navegador con el título `Compra Online en Carrefour: Ofertas en Alimentación, Tecnología, Hogar`. El 403 era antibot, no una URL rota.
+  - Títulos reales de los juegos nuevos: `Solitario Spider de 1 palo - Juega online gratis | Solitar.io` y `Carta Blanca - Juega online gratis | Solitar.io`, ambos con botones `Pista` y `Deshacer` en el HTML.
+- **Desviaciones del plan:**
+  1. **Bug del plan corregido antes de que mordiera:** la Tarea 5 pone `icono: solitario.png` en las dos cartas de `solitar.io`, y `descargar-iconos.mjs` bajaba **todos** los iconos en cada ejecución escribiendo por nombre de fichero. La siguiente ejecución habría machacado el `solitario.png` dibujado a mano (Tarea 22) con el favicon de solitar.io, en silencio. El script ahora solo baja los que faltan y avisa `ya existe, se conserva`; para rehacerlos todos hay que pasar `--forzar`. Comprobado: tras ejecutarlo con el contenido v8, `git status` solo muestra `manifest.json`.
+  2. **Icono de Carrefour rehecho a mano desde su fuente oficial.** El servicio de favicons de Google solo da 16×16 para ese dominio, que a 48 px se ve borroso; se extrajo el 32×32 de `https://www.carrefour.es/favicon.ico` y se reescaló a 128×128 con `System.Drawing` (bicúbica). Amazon y El Corte Inglés se quedan en 48×48 porque es lo máximo que publican, y coincide con el tamaño exacto al que se pintan.
+- **Decisiones nuevas:** Ninguna. La sección Compras va en segundo lugar (Aprender, Compras, Prensa, Jugar), como pedía el plan.
+- **Pendientes que deja:**
+  1. **Los cuatro juegos no se han jugado** (Tarea 5 Step 3): el HTTP dice que responden y con qué título, no que se empiece una partida sin registro. Es presencial.
+  2. Los iconos de Amazon y El Corte Inglés son de 48×48; en una pantalla al 125 % se verán algo blandos.
+  3. La guía `comprar-seguro.md` no lleva capturas, igual que las cinco del Bloque 5.
+
+### Tarea 6: versión 0.1.4 y semilla v8 — HECHA salvo la publicación (2026-08-01)
+
+- **Commit (`entorno-app`):** `5bdd409`
+- **Verificado:** `npm run semilla` → `Semilla actualizada desde entorno-contenido` y `Semilla v8 · secciones: aprender, compras, prensa, jugar`. Verificación completa en verde: 65 tests JS, `vite build`, `cargo fmt --check`, 12 tests Rust, `Contenido OK` y `Cargo.lock` con `entorno-papa` en `0.1.4`.
+- **Desviaciones del plan:** Ninguna.
+- **Pendientes que deja:** **los Steps 7 y 8 —empujar los tres repos, tag `v0.1.4` y comprobar el workflow `release`— están sin hacer a propósito.** Publicar dispara la actualización automática en los PCs del padre; es decisión del autor, no del asistente.
